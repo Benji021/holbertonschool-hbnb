@@ -4,11 +4,12 @@ import uuid
 from datetime import datetime
 
 class user:
-    def __init__(self, id, first_name, last_name, email):
+    def __init__(self, id, first_name, last_name, email, password):
         self.id = str(uuid.uuid4())
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
+        self.password = password
 
     def save(self):
         """Update the update_at timestamp whenever the object is modified"""
