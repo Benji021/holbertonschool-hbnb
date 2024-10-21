@@ -5,7 +5,7 @@ from datetime import datetime
 import re
 import smtplib
 from email.mime.text import MIMEText
-
+import bcrypt
 
 class user:
     def __init__(self, id, first_name, last_name, email, password):
@@ -61,8 +61,7 @@ class user:
     # Check if the email is alrady present in the datebase
     def verifier_unicite_email(email, db):
         user = db.find_user_by_email(email)
-        # return user is None # Returns True if the e-mail is unique
-        return user is None
+        return user is None  # Returns True if the e-mail is unique
     
     # Send a verification email
     def send_email_verification(email_destinataire, token):
@@ -77,12 +76,12 @@ class user:
         try:
             with smtplib.SMTP("smtp.yoursite.com", 587) as server:
                 server.starttls()
-                server.login("your_email@yoursite.com"; "your_password")
+                server.login("your_email@yoursite.com", "your_password")
                 server.sendmail(msg["From"], msg["To"], msg.as_tring())
             print("E-mail sent successfully.")
         except Exception as e:
             print(f"Error sending e-mail: {e}")
-        
+
     # Confirm email verification
     def verifier_token(token, db):
         user = db.find_user_by_token(token)
@@ -93,29 +92,58 @@ class user:
         return False
 
 
-    # Check password validity
+    # Function to check password complexity
     def validate_password(password):
         # Check minimum password length
         if len(password) < 8:
             return "The password must be at least 8 characters long."
-        
+
         # Check for capital letters
         if not re.search(r"[A-Z]", password):
             return "The password must contain at least one capital letter."
-        
+
         # Check for lower-case letters
         if not re.search(r"[a-z]", password):
             return "The password must contain at least one lowercase letter."
-        
+
         # Check the presence of a digit
         if not re.search(r"\d", password):
             return "The password must contain at least one digit."
-        
+
         # Check for the presence of a special character
         if not re.search(r"[!@#$%^&*()_+=-]", password):
             return "The password must include at least one special character."
         
         return "The password is valid."
+
+    # Function to confirm password
+    def confirm_password(password, confirm_password):
+        if password != confirm_password:
+            return "The passwords don't match."
+        return None
+
+    # Password hash function
+    def hasher_password(password):
+        password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        return password_hash
+
+    # Execute validation
+    password = input("Enter your password: ")
+    confirm_password = input("Confirm your password: ")
+
+    # Check security criteria
+    message_error = validate_password(password)
+    if message_error:
+        print(f"Error : {message_error}")
+    else:
+    # Confirmation check
+        confirm_message = confirm_password(password, confirm_password)
+    if confirm_message:
+        print(f"Error : {confirm_message}")
+    else:
+        # Hash password
+        password_hash = hasher_password(password)
+        print(f"Password validated and hashed: {password_hash.decode("utf-8")}")
 
 
     # Validaty datetime
