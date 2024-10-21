@@ -3,6 +3,8 @@
 import uuid
 from datetime import datetime
 import re
+import smtplib
+from email.mime.text import MIMEText
 
 
 class user:
@@ -12,6 +14,12 @@ class user:
         self.last_name = last_name
         self.email = email
         self.password = password
+
+
+    # Generate the unique token
+    def generer_token():
+        return str(uuid.uuid4())
+
 
     # Check first_name validity
     def validate_first_name(first_name):
@@ -27,6 +35,7 @@ class user:
         
         return True
 
+
     # Check Last_name validity
     def validate_last_name(last_name):
         # Length check (between 3 an 30 characters)
@@ -40,7 +49,8 @@ class user:
             return False
         
         return True
-    
+
+
     # Check email validity
     def validate_email(email):
         if "@" and "." in email:
@@ -48,6 +58,41 @@ class user:
         else:
             return False
         
+    # Check if the email is alrady present in the datebase
+    def verifier_unicite_email(email, db):
+        user = db.find_user_by_email(email)
+        # return user is None # Returns True if the e-mail is unique
+        return user is None
+    
+    # Send a verification email
+    def send_email_verification(email_destinataire, token):
+        subject = "Verify your email address"
+        message = f"Click on this link to verify your mail : (http/your_mail.com/verify-email) token={token}"
+
+        msg = MIMEText(message)
+        msg['Subject'] = subject
+        msg['From'] = "no-reply@yoursite.com"
+        msg['To'] = email_destinataire
+
+        try:
+            with smtplib.SMTP("smtp.yoursite.com", 587) as server:
+                server.starttls()
+                server.login("your_email@yoursite.com"; "your_password")
+                server.sendmail(msg["From"], msg["To"], msg.as_tring())
+            print("E-mail sent successfully.")
+        except Exception as e:
+            print(f"Error sending e-mail: {e}")
+        
+    # Confirm email verification
+    def verifier_token(token, db):
+        user = db.find_user_by_token(token)
+        if user:
+            user.email_verify = True
+            db.save(user)
+            return True
+        return False
+
+
     # Check password validity
     def validate_password(password):
         # Check minimum password length
@@ -72,6 +117,8 @@ class user:
         
         return "The password is valid."
 
+
+    # Validaty datetime
     def save(self):
         """Update the update_at timestamp whenever the object is modified"""
         self.created_at = datetime.now()
