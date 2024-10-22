@@ -17,6 +17,8 @@ class place:
         self.set_price(price)
         self.location = location
         self.user = None
+        self.review = [] # List of reviews
+
 
     # Generate the unique token
     def generer_token():
@@ -119,6 +121,10 @@ class place:
     # Return the price of the location
     def get_full_price(self):
         return f"{self.price}"
+
+    # Define each notice for the location
+    def add_review(self, review):
+        self.review.append(review)
 
 
     # Validity datetime
