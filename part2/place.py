@@ -127,6 +127,10 @@ class place:
     def add_review(self, review):
         self.review.append(review)
 
+    # Define each aminity for the location
+    def add_aminity(self, aminity):
+        self.aminity.append(aminity)
+
 
     # Validity datetime
     def save(self):
