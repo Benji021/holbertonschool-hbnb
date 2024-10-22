@@ -97,30 +97,30 @@ class user:
     def validate_password(password):
         # Check minimum password length
         if len(password) < 8:
-            return "The password must be at least 8 characters long."
+            return False
 
         # Check for capital letters
         if not re.search(r"[A-Z]", password):
-            return "The password must contain at least one capital letter."
+            return False
 
         # Check for lower-case letters
         if not re.search(r"[a-z]", password):
-            return "The password must contain at least one lowercase letter."
+            return False
 
         # Check the presence of a digit
         if not re.search(r"\d", password):
-            return "The password must contain at least one digit."
+            return False
 
         # Check for the presence of a special character
         if not re.search(r"[!@#$%^&*()_+=-]", password):
-            return "The password must include at least one special character."
+            return False
         
-        return "The password is valid."
+        return True
 
     # Function to confirm password
     def confirm_password(password, confirm_password):
         if password != confirm_password:
-            return "The passwords don't match."
+            return False
         return None
 
     # Password hash function
