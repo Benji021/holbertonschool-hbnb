@@ -18,6 +18,7 @@ class place:
         self.location = location
         self.user = None
         self.review = [] # List of reviews
+        self.aminity = [] # List of aminity
 
 
     # Generate the unique token
