@@ -14,6 +14,7 @@ class user:
         self.last_name = last_name
         self.email = email
         self.password = password
+        self.place = [] # Each user can have several seats
 
 
     # Generate the unique token
@@ -144,6 +145,11 @@ class user:
         # Hash password
         password_hash = hasher_password(password)
         print(f"Password validated and hashed: {password_hash.decode("utf-8")}")
+
+    # Define each location as a user
+    def add_place(self, place):
+        self.place.append(place)
+        place.user = user
 
 
     # Validaty datetime
