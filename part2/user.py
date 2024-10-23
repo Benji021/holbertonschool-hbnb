@@ -14,7 +14,8 @@ class user:
         self.last_name = last_name
         self.email = email
         self.password = password
-        self.place = [] # Each user can have several seats
+        self.place = [] # Each user can have several location
+        self.review = [] # Each user can leave several reviews
 
 
     # Generate the unique token
@@ -150,6 +151,10 @@ class user:
     def add_place(self, place):
         self.place.append(place)
         place.user = user
+
+    # Define eache reviews as a user
+    def add_review(self, review):
+        self.review.append(review)
 
 
     # Validaty datetime
