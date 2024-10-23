@@ -12,6 +12,7 @@ class aminity:
         self.name = name
         self.description = description
         self.available = available
+        self.place = [] # List of places with this amenity
 
     # Check name validity
     def validity_name(name):
@@ -44,6 +45,10 @@ class aminity:
     # Display the details of the aminity
     def __str__(self):
         return f"{self.name}: {self.description} (Available: {self.available})"
+
+    # Define list of place
+    def add_place(self, place):
+        self.place.append(place)
 
 
     # Validity datetime
