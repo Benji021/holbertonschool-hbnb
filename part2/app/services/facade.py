@@ -75,3 +75,73 @@ class HBnBFacade:
 
         updated_place = {**existing_place, **place_data}
         return self.place_repo.update(place_id, updated_place)
+
+    def create_review(self, review_data):
+    # Logic to create a review, including validation for user_id, place_id, and rating
+        user_id = review_data.get('user_id')
+        place_id = review_data.get('place_id')
+        rating = review_data.get('rating')
+        text = review_data.get('text')
+
+        if not user_id or not place_id or not rating or not text:
+            raise ValueError("Missing required fields: user_id, place_id, rating, or text")
+
+        if not isinstance(rating, int) or not (1 <= rating <= 5):
+            raise ValueError('Rating must be an integer between 1 and 5')
+
+        user = self.user_repo.get(user_id)
+        place = self.place_repo.get(place_id)
+        if not user:
+            raise ValueError(f"User with ID {user_id} does not exists")
+        if not place:
+            raise ValueError(f"Place with ID {place_id} does not exist")
+
+        new_review = {
+            'user_id': user_id,
+            'place_id': place_id,
+            'rating': rating,
+            'text': text
+        }
+        return self.review_repo.add(new_review)
+
+    def get_review(self, review_id):
+    # Logic to retrieve a review by ID
+        review = self.review_repo.get(review_id)
+        if not review:
+            raise ValueError(f"Review with ID {review_id} does not exist")
+        return review
+
+    def get_all_reviews(self):
+        return self.review_repo.get_all()
+
+    def get_reviews_by_place(self, place_id):
+    # Logic to retrieve all reviews for a specific place
+        place = self.place_repo.get(place_id)
+        if not place:
+            raise ValueError(f"Place with ID {place_id} does not exist")
+
+        reviews = self.review_repo.get_all()
+        return [review for review in reviews if review['place_id'] == place_id]
+
+    def update_review(self, review_id, review_data):
+    # Logic to update a review
+        existing_review = self.review_repo.get(review_id)
+        if not existing_review:
+            raise ValueError(f"Review with ID {review_id} does not exist")
+
+        if 'rating' in review_data:
+            rating = review_data
+            if not isinstance(rating, int) or not (1 <= rating <= 5):
+                raise ValueError("Rating must be an integer between 1 and 5")
+
+        updated_review = {**existing_review, **review_data}
+
+        return self.review_repo.update(review_id, updated_review)
+
+    def delete_review(self, review_id):
+    # Logic to delete a review
+        existing_review = self.review_repo.get(review_id)
+        if not existing_review:
+            raise ValueError(f"Review with ID {review_id} does not exist")
+
+        return self.review_repo.delete(review_id)

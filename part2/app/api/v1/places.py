@@ -1,7 +1,8 @@
 from flask_restx import Namespace, Resource, fields
-from app.services import facade
+from app.services import HBnBFacade
 
 api = Namespace('places', description='Place operations')
+facade = HBnBFacade()
 
 # Define the models for related entities
 amenity_model = api.model('PlaceAmenity', {
@@ -16,6 +17,14 @@ user_model = api.model('PlaceUser', {
     'email': fields.String(description='Email of the owner')
 })
 
+# Adding the review model
+review_model = api.model('PlaceReview', {
+    'id': fields.String(description='Review ID'),
+    'text': fields.String(description='Text of the review'),
+    'rating': fields.Integer(description='Rating of the place (1-5)'),
+    'user_id': fields.String(description='ID of the user')
+})
+
 # Define the place model for input validation and documentation
 place_model = api.model('Place', {
     'title': fields.String(required=True, description='Title of the place'),
@@ -24,7 +33,9 @@ place_model = api.model('Place', {
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
     'owner_id': fields.String(required=True, description='ID of the owner'),
-    'amenities': fields.List(fields.String, required=True, description="List of amenities ID's")
+    'owner': fields.Nested(user_model, description='Owner of the place'),
+    'amenities': fields.List(fields.Nested(amenity_model), description='List of amenities'),
+    'reviews': fields.List(fields.Nested(review_model), description='List of reviews')
 })
 
 @api.route('/')
@@ -34,38 +45,38 @@ class PlaceList(Resource):
     @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new place"""
-        place_data = api.payload
+        if not api.payload:
+            return {'error': 'Request payload is missing or invalid'}, 400
         try:
+            place_data = api.payload
             created_place = facade.create_place(place_data)
             if created_place:
-                return created_place, 201
-            else:
-                return {'message': 'Failed to create a new place'}, 400
+                return {'message': 'Place successfully created', 'place': created_place}, 201
         except ValueError as e:
-            return {'message': str(e)}, 400
+            return {'error': str(e)}, 400
 
-    @api.marshal_with(place_model)
+    @api.marshal_with(place_model, as_list=True)
     @api.response(200, description='List of places retrieved successfully')
     def get(self):
         """Retrieve a list of all places"""
-        places = facade.get_all_places()
-        return places
+        try:
+            places = facade.get_all_places()
+            return places
+        except Exception as e:
+            return {'error': f'An unexpected error occurred: {str(e)}'}, 500
 
 @api.route('/<place_id>')
 class PlaceResource(Resource):
+    @api.marshal_with(place_model)
     @api.response(200, 'Place details retrieved successfully')
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get place details by ID"""
         try:
-            places_id = facade.get_place(place_id)
-            if places_id:
-                return places_id, 200
-            else:
-                return {'message': 'Place not found'}, 404
-        except Exception as e:
-            return {'message': str(e)}, 500
-
+            place = facade.get_place(place_id)
+            return place
+        except ValueError as e:
+            return {'error': str(e)}, 404
 
     @api.expect(place_model)
     @api.response(200, 'Place updated successfully')
@@ -73,14 +84,11 @@ class PlaceResource(Resource):
     @api.response(400, 'Invalid input data')
     def put(self, place_id):
         """Update a place's information"""
-        updated_data = api.payload
+        if not api.payload:
+            return {'message': 'Request payload is missing or invalid'}, 400
         try:
+            updated_data = api.payload
             updated_place = facade.update_place(place_id, updated_data)
-            if updated_place:
-                return updated_place, 200
-            else:
-                return {'message': 'Place not found or update failed'}, 404
+            return {'message': 'Place successfully updated', 'place': updated_place}, 200
         except ValueError as e:
-            return {'message': str(e)}, 400
-        except Exception as e:
-            return {'message': str(e)}, 500
+            return {'error': str(e)}, 400
