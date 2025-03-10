@@ -46,7 +46,7 @@ class UserResource(Resource):
             'email': user.email
         }, 200
 
-    @api.expect(user_model, validate=True)  # Ajoute la validation
+    @api.expect(user_model, validate=True)  # Add validation
     @api.response(200, 'User successfully updated')
     @api.response(403, 'You can only update your own details')
     @api.response(404, 'User not found')
