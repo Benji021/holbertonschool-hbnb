@@ -15,6 +15,19 @@ def create_app():
     # Initialize the JWT manager
     jwt = JWTManager(app)
 
+    # JWT error handling
+    @jwt.expired_token_loader
+    def expired_token_callback(jwt_header, jwt_payload):
+        return jsonify({"msg": "Le token a expiré"}), 401
+
+    @jwt.invalid_token_loader
+    def invalid_token_callback(error):
+        return jsonify({"msg": "Token invalide"}), 401
+
+    @jwt.unauthorized_loader
+    def missing_token_callback(error):
+        return jsonify({"msg": "Token manquant"}), 401
+
     # Create API
     api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API')
 
