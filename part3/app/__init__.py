@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify, request
 from flask_restx import Api
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity # Import the JWT manager
 from app.api.v1.users import api as users_ns
@@ -23,6 +23,23 @@ def create_app():
     api.add_namespace(amenities_ns, path="/api/v1/amenities")
     api.add_namespace(places_ns, path='/api/v1/places')
     api.add_namespace(reviews_ns, path='/api/v1/reviews')
+
+    # Create a connection endpoint
+    @app.route('/login', methods=['POST'])
+    def login():
+
+        # Retrieve user credentials sent in the request body
+        username = request.json.get('username', None)
+        password = request.json.get('password', None)
+
+        # Check identifiers (replace this logic with a real check in your DB)
+        if username == 'user_test' and password == 'password_test':
+
+            # Create a JWT access token
+            access_token = create_access_token(identity=username)
+            return jsonify(access_token=access_token), 200
+        
+        return jsonify({"msg": "Identifiants invalides"}), 401
 
     return app
 
