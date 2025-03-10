@@ -1,3 +1,4 @@
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restx import Namespace, Resource, fields
 from app.services import HBnBFacade
 
@@ -40,6 +41,7 @@ place_model = api.model('Place', {
 
 @api.route('/')
 class PlaceList(Resource):
+    @jwt_required() # Requires a JWT token to access this route
     @api.expect(place_model)
     @api.response(201, 'Place successfully created')
     @api.response(400, 'Invalid input data')
@@ -47,6 +49,14 @@ class PlaceList(Resource):
         """Register a new place"""
         if not api.payload:
             return {'error': 'Request payload is missing or invalid'}, 400
+        
+        current_user = get_jwt_identity()  # Recover logged-in user ID
+        place_data = api.payload
+
+        # Check that the logged-in user is the owner of the location
+        if place_data['owner_id'] != current_user:
+            return {'error': "You can only create places under your own account"}, 403
+
         try:
             place_data = api.payload
             created_place = facade.create_place(place_data)
@@ -78,6 +88,7 @@ class PlaceResource(Resource):
         except ValueError as e:
             return {'error': str(e)}, 404
 
+    @jwt_required()  # Requires authentication to modify a location
     @api.expect(place_model)
     @api.response(200, 'Place updated successfully')
     @api.response(404, 'Place not found')
@@ -86,6 +97,18 @@ class PlaceResource(Resource):
         """Update a place's information"""
         if not api.payload:
             return {'message': 'Request payload is missing or invalid'}, 400
+        
+        current_user = get_jwt_identity()  # Recover logged-in user ID
+
+        # Retrieve location details to verify owner
+        place = facade.get_place(place_id)
+        if not place:
+            return {'error': 'Place not found'}, 404
+        
+        # Check that the authenticated user is the owner of the site
+        if place['owner_id'] != current_user:
+            return {'error': "You are not authorized to update this place"}, 403
+        
         try:
             updated_data = api.payload
             updated_place = facade.update_place(place_id, updated_data)
