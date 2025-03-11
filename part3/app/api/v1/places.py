@@ -138,3 +138,41 @@ class PlaceResource(Resource):
             return {'message': 'Place successfully updated', 'place': updated_place}, 200
         except ValueError as e:
             return {'error': str(e)}, 400
+    @api.marshal_with(place_model)
+    @api.response(200, 'Place details retrieved successfully')
+    @api.response(404, 'Place not found')
+    def get(self, place_id):
+        """Get place details by ID"""
+        try:
+            place = facade.get_place(place_id)
+            return place
+        except ValueError as e:
+            return {'error': str(e)}, 404
+
+    @jwt_required()  # Requires authentication to modify a location
+    @api.expect(place_model)
+    @api.response(200, 'Place updated successfully')
+    @api.response(404, 'Place not found')
+    @api.response(400, 'Invalid input data')
+    def put(self, place_id):
+        """Update a place's information"""
+        if not api.payload:
+            return {'message': 'Request payload is missing or invalid'}, 400
+        
+        current_user = get_jwt_identity()  # Recover logged-in user ID
+
+        # Retrieve location details to verify owner
+        place = facade.get_place(place_id)
+        if not place:
+            return {'error': 'Place not found'}, 404
+        
+        # Check that the authenticated user is the owner of the site
+        if place['owner_id'] != current_user:
+            return {'error': "You are not authorized to update this place"}, 403
+        
+        try:
+            updated_data = api.payload
+            updated_place = facade.update_place(place_id, updated_data)
+            return {'message': 'Place successfully updated', 'place': updated_place}, 200
+        except ValueError as e:
+            return {'error': str(e)}, 400
