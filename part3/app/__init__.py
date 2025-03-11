@@ -5,6 +5,9 @@ from app.api.v1.users import api as users_ns
 from app.api.v1.amenities import api as amenities_ns
 from app.api.v1.places import api as places_ns
 from app.api.v1.reviews import api as reviews_ns
+from app.services import HBnBFacade
+
+facade = HBnBFacade()
 
 def create_app():
     app = Flask(__name__)
@@ -44,17 +47,21 @@ def create_app():
     def login():
 
         # Retrieve user credentials sent in the request body
-        username = request.json.get('username', None)
+        email = request.json.get('email', None)
         password = request.json.get('password', None)
 
         # Check identifiers (replace this logic with a real check in your DB)
-        if username == 'user_test' and password == 'password_test':
+        user = facade.authenticate_user(email, password)
 
-            # Create a JWT access token
-            access_token = create_access_token(identity=username)
-            return jsonify(access_token=access_token), 200
+        if not user:
+            return jsonify({"msg": "Identifiants invalides"}), 401
+
+        # Use user ID as identity in token
+        access_token = create_access_token(identity=user.id)
+
+        return jsonify(access_token=access_token), 200
         
-        return jsonify({"msg": "Identifiants invalides"}), 401
+    return jsonify({"msg": "Identifiants invalides"}), 401
 
     return app
 
