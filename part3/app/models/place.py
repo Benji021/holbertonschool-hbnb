@@ -114,3 +114,4 @@ class Place:
 
     def __str__(self):
         return f"{self.title} - {self.price}€/night, {self.latitude}, {self.longitude} (Owner: {self.owner})"
+    
