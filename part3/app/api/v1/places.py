@@ -52,6 +52,8 @@ class PlaceList(Resource):
         
         current_user = get_jwt_identity()  # Recover logged-in user ID
         place_data = api.payload
+        
+        print("place_data:", place_data, type(place_data))
 
         # Check that the logged-in user is the owner of the location
         if place_data.get("owner_id") != current_user:
