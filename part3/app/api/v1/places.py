@@ -74,6 +74,8 @@ class PlaceList(Resource):
             place_data = api.payload
             print("DEBUG - Creating place with data:", place_data) # Debug
             created_place = facade.create_place(place_data)
+            print("DEBUG - Created place:", created_place) # Debug
+            
             if created_place:
                 return {'message': 'Place successfully created', 'place': created_place}, 201
         except ValueError as e:
