@@ -5,6 +5,7 @@
 import uuid
 from datetime import datetime
 from app.models.review import Review
+from app.models.user import User
 
 class Place:
     def __init__(self, id,  title, price, latitude, longitude, owner_id, description=None):
@@ -23,8 +24,7 @@ class Place:
         self.owner = self.validate_owner(owner_id)
         self.created_at = datetime.now()
         self.updated_at = self.created_at
-
-        from app.models.user import User # Import here to avoid circular import
+ 
         self.owner = self.get_user(owner_id)  # Retrieves the user with this ID
         if not self.owner:
             raise ValueError(f"Invalid owner_id: No user found with ID {owner_id}")
