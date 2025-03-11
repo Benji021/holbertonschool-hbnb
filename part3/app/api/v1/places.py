@@ -54,7 +54,7 @@ class PlaceList(Resource):
         place_data = api.payload
 
         # Check that the logged-in user is the owner of the location
-        if place_data.owner_id != current_user:
+        if place_data.get("owner_id") != current_user:
             return {'error': "You can only create places under your own account"}, 403
 
         try:
