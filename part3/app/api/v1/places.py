@@ -51,9 +51,13 @@ class PlaceList(Resource):
             return {'error': 'Request payload is missing or invalid'}, 400
         
         current_user = get_jwt_identity()  # Recover logged-in user ID
-        place_data = api.payload
+        place_data = request.get_json()
+
+        if not place_data or not isinstance(place_data, dict):
+            return jsonify({"error": "Invalid request format"}), 400
         
         print("place_data:", place_data, type(place_data))
+        print("current_user:", current_user)
 
         # Check that the logged-in user is the owner of the location
         if place_data.get("owner_id") != current_user:
