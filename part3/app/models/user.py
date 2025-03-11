@@ -29,7 +29,6 @@ class User:
         self.places = []  
         self.reviews = []
 
-        from app.models.place import Place # Import here to avoid circular import
         # Add user to simulated database
         User.users_db[self.id] = self
 
