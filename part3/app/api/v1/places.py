@@ -53,6 +53,7 @@ class PlaceList(Resource):
             return {'error': 'Request payload is missing or invalid'}, 400
         
         current_user = get_jwt_identity()  # Recover logged-in user ID
+        print("DEBUG - JWT identity:", current_user) # Debug
         place_data = request.get_json()
 
         if not place_data or not isinstance(place_data, dict):
