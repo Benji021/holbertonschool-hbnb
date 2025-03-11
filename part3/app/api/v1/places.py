@@ -63,6 +63,10 @@ class PlaceList(Resource):
         print("DEBUG - current_user:", current_user)
 
         owner_id = place_data.get("owner_id")
+        user = facade.get_user(owner_id)  # Vérifie si l'utilisateur existe
+
+        if not user:
+            return {'error': f"Invalid owner_id: No user found with ID {owner_id}"}, 400
 
         # Check that the logged-in user is the owner of the location
         if owner_id != current_user:
@@ -75,7 +79,7 @@ class PlaceList(Resource):
             print("DEBUG - Creating place with data:", place_data) # Debug
             created_place = facade.create_place(place_data)
             print("DEBUG - Created place:", created_place) # Debug
-            
+
             if created_place:
                 return {'message': 'Place successfully created', 'place': created_place}, 201
         except ValueError as e:
