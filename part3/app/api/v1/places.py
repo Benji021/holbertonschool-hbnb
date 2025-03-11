@@ -67,15 +67,17 @@ class PlaceList(Resource):
         # Check that the logged-in user is the owner of the location
         if owner_id != current_user:
             return {'error': "You can only create places under your own account"}, 403
-        print(f"DEBUG - owner_id: {owner_id}, current_user: {current_user}")
+        print(f"DEBUG - owner_id: {owner_id}, current_user: {current_user}") # Debug
 
 
         try:
             place_data = api.payload
+            print("DEBUG - Creating place with data:", place_data) # Debug
             created_place = facade.create_place(place_data)
             if created_place:
                 return {'message': 'Place successfully created', 'place': created_place}, 201
         except ValueError as e:
+            print("DEBUG - Error in create_place:", str(e)) # Debug
             return {'error': str(e)}, 400
 
     @api.marshal_with(place_model, as_list=True)
