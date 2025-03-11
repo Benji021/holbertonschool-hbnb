@@ -37,6 +37,8 @@ class UserResource(Resource):
     def get(self, user_id):
         """Get user details by ID"""
         user = facade.get_user(user_id)
+        print("DEBUG - Searching for user_test:", facade.get_user("user_test")) # Debugging
+
         if not user:
             return {'error': 'User not found'}, 404
         return {
