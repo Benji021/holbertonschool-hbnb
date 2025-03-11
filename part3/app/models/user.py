@@ -34,6 +34,7 @@ class User:
 
     def add_place(self, place):
         """ Associate a location with this user """
+        from app.models.place import Place  # Import here to avoid circular import
         if isinstance(place, Place):
             self.places.append(place)  
             place.owner = self  # Set user as owner
