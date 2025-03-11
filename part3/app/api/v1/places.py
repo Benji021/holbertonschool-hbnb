@@ -65,6 +65,8 @@ class PlaceList(Resource):
         owner_id = place_data.get("owner_id")
         user = facade.get_user(owner_id)  # Vérifie si l'utilisateur existe
 
+        print("DEBUG - Checking user existence:", user) # Debug
+
         if not user:
             return {'error': f"Invalid owner_id: No user found with ID {owner_id}"}, 400
 
