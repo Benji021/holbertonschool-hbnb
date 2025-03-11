@@ -1,6 +1,8 @@
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restx import Namespace, Resource, fields
 from app.services import HBnBFacade
+from flask import request, jsonify
+
 
 api = Namespace('places', description='Place operations')
 facade = HBnBFacade()
