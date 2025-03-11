@@ -51,7 +51,7 @@ def create_app():
         if username == 'user_test' and password == 'password_test':
 
             # Create a JWT access token
-            access_token = create_access_token(identity=username.id)
+            access_token = create_access_token(identity=username)
             return jsonify(access_token=access_token), 200
         
         return jsonify({"msg": "Identifiants invalides"}), 401
