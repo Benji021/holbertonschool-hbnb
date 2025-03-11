@@ -25,8 +25,6 @@ class Place:
         self.created_at = datetime.now()
         self.updated_at = self.created_at
 
-        print(f"DEBUG: Tentative d'association de owner_id: {owner_id}")
-
         self.owner = self.get_user(owner_id)  # Retrieves the user with this ID
         if not self.owner:
             raise ValueError(f"Invalid owner_id: No user found with ID {owner_id}")
