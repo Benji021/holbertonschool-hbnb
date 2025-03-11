@@ -56,10 +56,11 @@ class PlaceList(Resource):
         place_data = request.get_json()
 
         if not place_data or not isinstance(place_data, dict):
+            print("DEBUG - Invalid request format")
             return jsonify({"error": "Invalid request format"}), 400
         
-        print("place_data:", place_data, type(place_data))
-        print("current_user:", current_user)
+        print("DEBUG - place_data:", place_data)
+        print("DEBUG - current_user:", current_user)
 
         # Check that the logged-in user is the owner of the location
         if place_data.get("owner_id") != current_user:
