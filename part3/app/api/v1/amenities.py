@@ -36,6 +36,7 @@ class AmenityList(Resource):
         return amenity.to_dict(), 201
  
     @api.response(200, 'List of amenities retrieved successfully')
+    @jwt_required()
     def get(self):
         amenities = facade.get_all_amenities()
         return [amenity.to_dict() for amenity in amenities], 200 
@@ -45,6 +46,7 @@ class AmenityList(Resource):
 class AmenityResource(Resource):
     @api.response(200, 'Amenity details retrieved successfully')
     @api.response(404, 'Amenity not found')
+    @jwt_required()
     def get(self, amenity_id):
         amenity = facade.get_amenity(amenity_id)
         print(f">>> Amenity fetched: {amenity}")
