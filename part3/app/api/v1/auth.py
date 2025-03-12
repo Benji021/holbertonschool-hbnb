@@ -12,10 +12,6 @@ login_model = api.model('Login', {
     'password': fields.String(required=True, description='User password')
 })
 
-@auth_bp.route("", methods=["POST"])
-def login():
-    data = request.get_json()
-    return jsonify({"message": "Login successful", "data": data})
 @api.route('/login')
 class Login(Resource):
     @api.expect(login_model)
