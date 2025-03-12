@@ -18,7 +18,6 @@ def create_app(config_class="config.DevelopmentConfig"):
 
     # Configuration for JWT
     app.config["JWT_SECRET_KEY"] = "super-secret-key"
-    jwt = JWTManager(app)
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hbnb_database.db'
     api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API')
@@ -26,7 +25,6 @@ def create_app(config_class="config.DevelopmentConfig"):
     app.register_blueprint(auth_bp) # Register the auth blueprint
 
     # Creating the Flask-Restx API and adding the namespaces
-    api = Api(app)
     api.add_namespace(auth_api, path="/api/v1/auth")
 
     db.init_app(app)
