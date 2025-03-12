@@ -61,6 +61,7 @@ class ReviewResource(Resource):
     @api.response(200, 'Review updated successfully')
     @api.response(404, 'Review not found')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def put(self, review_id):
         """Update a review's information"""
         if not api.payload:
@@ -74,6 +75,7 @@ class ReviewResource(Resource):
 
     @api.response(200, 'Review deleted successfully')
     @api.response(404, 'Review not found')
+    @jwt_required() 
     def delete(self, review_id):
         """Delete a review"""
         try:
@@ -102,6 +104,7 @@ class AdminReviewModify():
     @admin_api.response(200, 'Review deleted succesfuly')
     @admin_api.response(404, 'Review not found')
     @admin_api.response(403, 'Unauthorized action')
+    @jwt_required()
     def delete(self, review_id):
         current_user = get_jwt_identity()
         is_admin = current_user.get('is_admin', False)
