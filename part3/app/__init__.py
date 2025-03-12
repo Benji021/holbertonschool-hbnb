@@ -10,7 +10,7 @@ from app.api.v1.reviews import api as reviews_ns
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
-jwt = JWTManager()
+jwt = JWTManager() # JWTManager declaration
 
 def create_app(config_class="config.DevelopmentConfig"):
     app = Flask(__name__)
@@ -20,6 +20,8 @@ def create_app(config_class="config.DevelopmentConfig"):
 
     db.init_app(app)
     bcrypt.init_app(app)
+    jwt.init_app(app)  # Initializing the JWTManager
+
     # Register the users namespace
     api.add_namespace(users_ns, path='/api/v1/users')
     api.add_namespace(amenities_ns, path="/api/v1/amenities")
