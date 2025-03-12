@@ -144,10 +144,10 @@ class AdminPlaceModify(Resource):
             return {'error': 'Place not found'}, 404
  
         return {'message': 'Place deleted successfully'}, 200
-   @api.marshal_with(place_model)
-   @api.response(200, 'Place details retrieved successfully')
-   @api.response(404, 'Place not found')
-   def get(self, place_id):
+    @api.marshal_with(place_model)
+    @api.response(200, 'Place details retrieved successfully')
+    @api.response(404, 'Place not found')
+    def get(self, place_id):
        """Get place details by ID"""
        try:
            place = facade.get_place(place_id)
@@ -155,12 +155,12 @@ class AdminPlaceModify(Resource):
        except ValueError as e:
            return {'error': str(e)}, 404
 
-   @jwt_required()  # Requires authentication to modify a location
-   @api.expect(place_model)
-   @api.response(200, 'Place updated successfully')
-   @api.response(404, 'Place not found')
-   @api.response(400, 'Invalid input data')
-   def put(self, place_id):
+    @jwt_required()  # Requires authentication to modify a location
+    @api.expect(place_model)
+    @api.response(200, 'Place updated successfully')
+    @api.response(404, 'Place not found')
+    @api.response(400, 'Invalid input data')
+    def put(self, place_id):
        """Update a place's information"""
        if not api.payload:
            return {'message': 'Request payload is missing or invalid'}, 400
@@ -182,10 +182,10 @@ class AdminPlaceModify(Resource):
            return {'message': 'Place successfully updated', 'place': updated_place}, 200
        except ValueError as e:
            return {'error': str(e)}, 400
-   @api.marshal_with(place_model)
-   @api.response(200, 'Place details retrieved successfully')
-   @api.response(404, 'Place not found')
-   def get(self, place_id):
+    @api.marshal_with(place_model)
+    @api.response(200, 'Place details retrieved successfully')
+    @api.response(404, 'Place not found')
+    def get(self, place_id):
        """Get place details by ID"""
        try:
            place = facade.get_place(place_id)
@@ -193,12 +193,12 @@ class AdminPlaceModify(Resource):
        except ValueError as e:
            return {'error': str(e)}, 404
 
-   @jwt_required()  # Requires authentication to modify a location
-   @api.expect(place_model)
-   @api.response(200, 'Place updated successfully')
-   @api.response(404, 'Place not found')
-   @api.response(400, 'Invalid input data')
-   def put(self, place_id):
+    @jwt_required()  # Requires authentication to modify a location
+    @api.expect(place_model)
+    @api.response(200, 'Place updated successfully')
+    @api.response(404, 'Place not found')
+    @api.response(400, 'Invalid input data')
+    def put(self, place_id):
        """Update a place's information"""
        if not api.payload:
            return {'message': 'Request payload is missing or invalid'}, 400
