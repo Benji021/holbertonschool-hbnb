@@ -1,25 +1,18 @@
-from uuid import uuid4
 from app.persistence.repository import InMemoryRepository
 from app.models.amenity import Amenity
 from app.models.user import User
 from app.models.place import Place
 from app.models.review import Review
-
+from uuid import uuid4
 
 class HBnBFacade:
-
-    def authenticate_user(self, email, password):
-        user = User.query.filter_by(email=email).first()
-        if user and user.check_password(password):  # Check password
-            return user
-        return None
-    
     def __init__(self):
         self.user_repo = InMemoryRepository()
-        self.amenity_repo = InMemoryRepository()
         self.place_repo = InMemoryRepository()
         self.review_repo = InMemoryRepository()
+        self.amenity_repo = InMemoryRepository()
 
+    # Placeholder method for creating a user
     def create_user(self, user_data):
         user = User(**user_data)
         self.user_repo.add(user)
@@ -81,36 +74,15 @@ class HBnBFacade:
     def create_place(self, place_data):
     # Logic to create a place, including validation for price, latitude, and longitude
         if not self._validate_place_data(place_data):
-            return {"error": "Invalid place data"}, 400
-        
-        owner_id = place_data.get('owner_id')
-        if not owner_id:
-            return {"error": "Owner is required"}, 400
+            return False
 
-        new_place = Place(
-            id=str(uuid4()),
-            owner_id=owner_id,
-            title=place_data.get('title'),
-            description=place_data.get('description'),
-            price=place_data.get('price'),
-            latitude=place_data.get('latitude'),
-            longitude=place_data.get('longitude')
-        )
-
-        created_place = self.place_repo.add(new_place)
-
-        return {
-            "message": "Place successfully created",
-            "place": {
-                "id": created_place.id,
-                "owner_id": created_place.owner_id,
-                "title": created_place.title,
-                "description": created_place.description,
-                "price": created_place.price,
-                "latitude": created_place.latitude,
-                "longitude": created_place.longitude
-            }
-        }, 201
+        new_place = {
+            'name' : place_data.get('name'),
+            'price' : place_data.get('price'),
+            'latitude' : place_data.get('latitude'),
+            'longitude' : place_data.get('longitude')
+        }
+        return self.place_repo.add(new_place)
 
     def _validate_place_data(self, place_data):
     # Logic to validate place data
