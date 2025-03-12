@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_restx import Namespace, Resource, fields
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, JWTManager
 from app.services import facade
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/v1/auth")
