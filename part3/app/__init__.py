@@ -50,6 +50,10 @@ def create_app():
         email = request.json.get('email', None)
         password = request.json.get('password', None)
 
+        print(f"DEBUG - Email: {email}, Password: {password}")  # Voir les valeurs
+        print(f"DEBUG - facade: {facade}")  # Vérifier si `facade` est bien créé
+        print(f"DEBUG - Has authenticate_user? {hasattr(facade, 'authenticate_user')}")
+
         # Check identifiers (replace this logic with a real check in your DB)
         user = facade.authenticate_user(email, password)
 
