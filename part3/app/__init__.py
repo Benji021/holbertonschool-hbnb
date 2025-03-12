@@ -15,6 +15,8 @@ jwt = JWTManager() # JWTManager declaration
 
 def create_app(config_class="config.DevelopmentConfig"):
     app = Flask(__name__)
+
+    app.config["JWT_SECRET_KEY"] = "super-secret-key"
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hbnb_database.db'
     api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API')
     app.config.from_object(config_class)
