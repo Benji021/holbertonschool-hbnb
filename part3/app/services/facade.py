@@ -7,6 +7,13 @@ from app.models.review import Review
 
 
 class HBnBFacade:
+
+    def authenticate_user(self, email, password):
+        user = User.query.filter_by(email=email).first()
+        if user and user.check_password(password):  # Check password
+            return user
+        return None
+    
     def __init__(self):
         self.user_repo = InMemoryRepository()
         self.amenity_repo = InMemoryRepository()
