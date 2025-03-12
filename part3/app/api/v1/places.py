@@ -51,11 +51,13 @@ class PlaceList(Resource):
         current_user = get_jwt_identity()
         if not api.payload:
             return {'error': 'Request payload is missing or invalid'}, 400
+        
+        place_data = api.payload
+        if place_data.get('owner_id') != current_user['id']:
+            return {'error': 'Unauthorized action'}, 403
+        
         try:
-            place_data = api.payload
             created_place = facade.create_place(place_data)
-            if created_place.owner_id != current_user:
-                return {'error': 'Unauthorized action'}, 403
             return {'message': 'Place successfully created', 'place': created_place}, 201
         except ValueError as e:
             return {'error': str(e)}, 400
@@ -81,7 +83,7 @@ class PlaceResource(Resource):
         current_user = get_jwt_identity()
         try:
             place = facade.get_place(place_id)
-            if place.owner_id != current_user:
+            if place["owner_id"] != current_user["id"]:
                 return {'error': 'Unauthorized action'}, 403
             return place
         except ValueError as e:
@@ -91,10 +93,19 @@ class PlaceResource(Resource):
     @api.response(200, 'Place updated successfully')
     @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def put(self, place_id):
         """Update a place's information"""
         if not api.payload:
             return {'message': 'Request payload is missing or invalid'}, 400
+        
+        current_user = get_jwt_identity()
+        place = facade.get_place(place_id)
+        if not place:
+            return {'error': 'Place not found'}, 404
+        if place['owner_id'] != current_user['id']:
+            return {'error': 'Unauthorized action'}, 403
+
         try:
             updated_data = api.payload
             updated_place = facade.update_place(place_id, updated_data)
