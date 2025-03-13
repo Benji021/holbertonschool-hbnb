@@ -5,7 +5,6 @@
 import uuid
 from datetime import datetime
 from app.models.review import Review
-from app.models.user import User
 
 class Place:
     def __init__(self, id,  title, price, latitude, longitude, owner_id, description=None):
@@ -37,7 +36,7 @@ class Place:
 
     def get_user(self, owner_id):
         """ Convertit owner_id en un objet User si c'est un ID """
-        """from app.models.user import User # Import here to avoid circular import"""
+        from app.models.user import User # Import here to avoid circular import
         if isinstance(owner_id, User):  # If it's already a User, we keep it
             return owner_id
         elif isinstance(owner_id, str): # If it's an ID, we look for the User object
