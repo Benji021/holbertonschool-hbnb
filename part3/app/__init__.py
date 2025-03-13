@@ -4,12 +4,17 @@ from app.api.v1.users import api as users_ns
 from app.api.v1.amenities import api as amenities_ns
 from app.api.v1.places import api as places_ns
 from app.api.v1.reviews import api as reviews_ns
+from flask_bcrypt import Bcrypt
+
+bcrypt = Bcrypt()
 
 def create_app(config_object=None):
     app = Flask(__name__)
 
     if config_object:
         app.config.from_object(config_object)
+
+    bcrypt.init_app(app) # initialize bcrypt
 
     api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API')
 
