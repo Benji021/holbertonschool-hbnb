@@ -30,7 +30,7 @@ class UserList(Resource):
         try:
             # Hash the password before storing
             user_data['password'] = generate_password_hash(user_data['password']).decode('utf-8')
-            
+
             new_user = facade.create_user(user_data)
             return new_user.to_dict(), 201
         except Exception as e:
@@ -51,7 +51,10 @@ class UserResource(Resource):
         user = facade.get_user(user_id)
         if not user:
             return {'error': 'User not found'}, 404
-        return user.to_dict(), 200
+        
+        user_data = user.to_dict()
+        user_data.pop('password', None)  # Remove password from response
+        return user_data, 200
 
     @api.expect(user_model)
     @api.response(200, 'User updated successfully')
