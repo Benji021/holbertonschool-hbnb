@@ -5,6 +5,7 @@
 import uuid
 from datetime import datetime
 from app.models.review import Review
+from app.models.user import User
 
 class Place:
     def __init__(self, id,  title, price, latitude, longitude, owner_id, description=None):
