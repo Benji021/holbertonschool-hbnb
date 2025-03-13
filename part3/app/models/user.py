@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """ Defining the user class, its attributes and relationships """
 
-from app.models.user import BaseModel
+from app.models.user import Users
 from app import bcrypt
 import re
 
