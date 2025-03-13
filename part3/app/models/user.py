@@ -5,7 +5,7 @@ import uuid
 from datetime import datetime
 from app.models.place import Place
 from app.models.review import Review
-from flask_bcrypt import Bcrypt
+from app import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
