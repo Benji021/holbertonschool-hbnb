@@ -2,9 +2,10 @@
 """ Defining the user class, its attributes and relationships """
 
 from .basemodel import BaseModel
-from app import bcrypt
+from flask_bcrypt import Bcrypt
 import re
 
+bcrypt = Bcrypt()
 class User(BaseModel):
     emails = set()
 
