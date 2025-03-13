@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 """ Defining the user class, its attributes and relationships """
+
 from .basemodel import BaseModel
+from app import bcrypt
 import re
 
 class User(BaseModel):
@@ -53,6 +55,18 @@ class User(BaseModel):
             User.emails.discard(self.__email)
         self.__email = value
         User.emails.add(value)
+
+    @property
+    def password(self):
+        return self.password
+    
+    def hash_password(self, password):
+        """Hashes the password before storing it."""
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def verify_password(self, password):
+        """Verifies if the provided password matches the hashed password."""
+        return bcrypt.check_password_hash(self.password, password)
 
     @property
     def is_admin(self):
