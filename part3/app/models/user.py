@@ -1,95 +1,85 @@
 #!/usr/bin/python3
 """ Defining the user class, its attributes and relationships """
+from .basemodel import BaseModel
 import re
-import uuid
-from datetime import datetime
-from app.models.place import Place
-from app.models.review import Review
-from app import Bcrypt
-from flask_sqlalchemy import SQLAlchemy
 
-db = SQLAlchemy()
-bcrypt = Bcrypt()
+class User(BaseModel):
+    emails = set()
 
-class User():
-    def __init__(self, first_name, last_name, email, password, is_admin=False):
-        super().__init__() # Initialize parent class
-
-        # Generate a unique ID
-        self.id = str(uuid.uuid4())
-
-        # Field checks
-        self.first_name = self.validate_name(first_name, "first name")
-        self.last_name = self.validate_name(last_name, "last name")
-        self.email = self.validate_email(email)
-        self.hash_password(password)
+    def __init__(self, first_name, last_name, email, is_admin=False):
+        super().__init__()
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email = email
         self.is_admin = is_admin
+        self.places = []
+        self.reviews = []
+    
+    @property
+    def first_name(self):
+        return self.__first_name
+    
+    @first_name.setter
+    def first_name(self, value):
+        if not isinstance(value, str):
+            raise TypeError("First name must be a string")
+        super().is_max_length('First name', value, 50)
+        self.__first_name = value
 
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+    @property
+    def last_name(self):
+        return self.__last_name
 
-        #Relation
-        self.place = [] # List of places owned by the user
-        self.reviews = [] # List of reviews written by the user
+    @last_name.setter
+    def last_name(self, value):
+        if not isinstance(value, str):
+            raise TypeError("Last name must be a string")
+        super().is_max_length('Last name', value, 50)
+        self.__last_name = value
+
+    @property
+    def email(self):
+        return self.__email
+
+    @email.setter
+    def email(self, value):
+        if not isinstance(value, str):
+            raise TypeError("Email must be a string")
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", value):
+            raise ValueError("Invalid email format")
+        if value in User.emails:
+            raise ValueError("Email already exists")
+        if hasattr(self, "_User__email"):
+            User.emails.discard(self.__email)
+        self.__email = value
+        User.emails.add(value)
+
+    @property
+    def is_admin(self):
+        return self.__is_admin
+    
+    @is_admin.setter
+    def is_admin(self, value):
+        if not isinstance(value, bool):
+            raise TypeError("Is Admin must be a boolean")
+        self.__is_admin = value
 
     def add_place(self, place):
-        """ Associate a location with this user """
-        if isinstance(place, Place):
-            self.place.append(place)
-            place.owner = self # Set user as owner
-        else:
-            raise TypeError("The object added must be an instance of Place")
+        """Add an amenity to the place."""
+        self.places.append(place)
 
     def add_review(self, review):
-        """ Associate a notice with this user """
-        if isinstance(review, Review):
-            self.reviews.append(review)
-            review.user = self # Define user as review author
-        else:
-            raise TypeError("The object added must be a Review instance")
+        """Add an amenity to the place."""
+        self.reviews.append(review)
 
-    @staticmethod
-    def validate_name(name, field_name):
-        """ Checks that the name is a string of max 50 characters. """
-        if not isinstance(name, str) or len(name) > 50:
-            raise ValueError(f"{field_name} must be a string of max 50 characters.")
-        return name.strip()
+    def delete_review(self, review):
+        """Add an amenity to the place."""
+        self.reviews.remove(review)
 
-    @staticmethod
-    def validate_email(email):
-        """ Checks that the email is valid. """
-        pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
-        if not re.match(pattern, email):
-            raise ValueError("Invalid e-mail address.")
-        return email.strip().lower()
-
-    def hash_password(self, password):
-        """Hashes the password before storing it."""
-        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
-
-    def verify_password(self, password):
-        """Verifies if the provided password matches the hashed password."""
-        return bcrypt.check_password_hash(self.password_hash, password)
-
-    def update(self, first_name=None, last_name=None, email=None, is_admin=None):
-        """ Updates user information. """
-        if first_name:
-            self.first_name = self.validate_name(first_name, "first name")
-        if last_name:
-            self.last_name = self.validate_name(last_name, "last name")
-        if email:
-            self.email = self.validate_email(email)
-        if is_admin is not None:
-            self.is_admin = is_admin
-
-        self.updated_at = datetime.now()
-
-
-    def show_info(self):
-        """ Displays user information. """
-        return (f"ID: {self.id}\n"
-                f"Name: {self.first_name} {self.last_name}\n"
-                f"Email: {self.email}\n"
-                f"Admin: {'Yes' if self.is_admin else 'No'}\n"
-                f"Created_at: {self.created_at}\n"
-                f"Update_at: {self.update_at}")
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'email': self.email
+        }
