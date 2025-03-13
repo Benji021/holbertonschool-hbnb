@@ -2,47 +2,66 @@
 """ Defining the review class, its attributes and relationships """
 
 
-from datetime import datetime
+from .basemodel import BaseModel
+from .place import Place
+from .user import User
 
-class Review:
-    def __init__(self, text, rating, place, user, review_id=None):
-        """
-        Initializes a new review.
-        :param review_id: Unique review identifier
-        :param text: Review content (mandatory)
-        :param rating: Rating given (between 1 and 5)
-        :param place: Instance of place under review
-        :param user: Instance of the user who wrote the review
-        """
-        if not (1 <= rating <= 5):
-            raise ValueError("The score must be between 1 and 5")
+class Review(BaseModel):
+	def __init__(self, text, rating, place, user):
+		super().__init__()
+		self.text = text
+		self.rating = rating
+		self.place = place
+		self.user = user
+	
+	@property
+	def text(self):
+		return self.__text
+	
+	@text.setter
+	def text(self, value):
+		if not value:
+			raise ValueError("Text cannot be empty")
+		if not isinstance(value, str):
+			raise TypeError("Text must be a string")
+		self.__text = value
 
-        self.review_id = review_id
-        self.text = text
-        self.rating = rating # Score between 1 and 5
-        self.created_at = datetime.now()
-        self.updated_at = self.created_at
+	@property
+	def rating(self):
+		return self.__rating
+	
+	@rating.setter
+	def rating(self, value):
+		if not isinstance(value, int):
+			raise TypeError("Rating must be an integer")
+		super().is_between('Rating', value, 1, 6)
+		self.__rating = value
 
-        # Relation
-        self.user = user # User who wrote the review
-        self.place = place # The place concerned by the review
+	@property
+	def place(self):
+		return self.__place
+	
+	@place.setter
+	def place(self, value):
+		if not isinstance(value, Place):
+			raise TypeError("Place must be a place instance")
+		self.__place = value
 
-        if user:
-            user.add_review(self) # Add review to user
+	@property
+	def user(self):
+		return self.__user
+	
+	@user.setter
+	def user(self, value):
+		if not isinstance(value, User):
+			raise TypeError("User must be a user instance")
+		self.__user = value
 
-
-    def __str__(self):
-        """ Returns a textual representation of the review """
-        return f"Review by {self.user}: {self.rating}/5 - {self.text} ({self.created_at})"
-
-    def updated_review(self, text=None, rating=None):
-        """ Updates review rating or comment """
-        if rating is not None:
-            if not (1 <= rating <= 5):
-                raise ValueError("The score must be between 1 and 5")
-        self.rating = rating
-
-        if text is not None:
-            self.text = text
-
-        self.updated_at = datetime.now()
+	def to_dict(self):
+		return {
+			'id': self.id,
+			'text': self.text,
+			'rating': self.rating,
+			'place_id': self.place.id,
+			'user_id': self.user.id
+		}
