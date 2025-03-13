@@ -46,6 +46,7 @@ class Place:
     @staticmethod
     def find_user_by_id(user_id):
         """ Simule la récupération d'un utilisateur par son ID (à remplacer par une requête DB) """
+        from app.models.user import User # Import here to avoid circular import
         # Fictitious example (replace this part with your ORM query)
         users_db = {
             "1234": User("Alice", "Dupont", "alice@example.com"),
@@ -55,6 +56,7 @@ class Place:
 
     def get_owner_object(self, owner_id):
         """ Retrieves the User object associated with owner_id """
+        from app.models.user import User # Import here to avoid circular import
         user = User.get(owner_id)  # Recover user ID
         if not user:
             raise ValueError(f"Aucun utilisateur trouvé avec l'ID {owner_id}")
@@ -114,4 +116,3 @@ class Place:
 
     def __str__(self):
         return f"{self.title} - {self.price}€/night, {self.latitude}, {self.longitude} (Owner: {self.owner})"
-    
