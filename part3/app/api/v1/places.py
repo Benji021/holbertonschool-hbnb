@@ -23,7 +23,7 @@ def admin_or_owner_required(fn):
         claims = get_jwt()
         user_id = get_jwt_identity()
         place_id = kwargs.get("place_id") # Get place_id cleanly
-        
+
         current_user = facade.get_user_by_id(user_id)
         if not current_user:
             return jsonify({"error": "User not found"}), 404
@@ -106,35 +106,42 @@ class PlaceResource(Resource):
             return {'error': 'Place not found'}, 404
         return place.to_dict(), 200
 
-    @api.expect(place_model)
+    @api.expect(place_model, validate=True)
     @api.response(200, 'Place updated successfully')
     @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
+    @api.response(403, 'Forbidden: Not authorized')
     @admin_or_owner_required
     def put(self, place_id):
         """Update a place's information (Admin or owner only)"""
         place_data = api.payload
-        place = facade.get_place(place_id)
+
+        # Vérifier si le lieu existe
+        place = facade.get_place_by_id(place_id)
         if not place:
             return {'error': 'Place not found'}, 404
+
         try:
             updated_place = facade.update_place(place_id, place_data)
-            return {'message': 'Place updated successfully'}, 200
+            return updated_place.to_dict(), 200
         except Exception as e:
             return {'error': str(e)}, 400
         
     @api.response(200, 'Place deleted successfully')
     @api.response(404, 'Place not found')
-    @api.response(403, 'Forbidden')
+    @api.response(403, 'Forbidden: Not authorized')
     @admin_or_owner_required
     def delete(self, place_id):
         """Delete a place (Admin or owner only)"""
+        place = facade.get_place_by_id(place_id)
+        if not place:
+            return {'error': 'Place not found'}, 404
+
         try:
             facade.delete_place(place_id)
             return {"message": "Place deleted successfully"}, 200
         except Exception as e:
             return {'error': str(e)}, 400
-
 @api.route('/<place_id>/amenities')
 class PlaceAmenities(Resource):
     @jwt_required()
