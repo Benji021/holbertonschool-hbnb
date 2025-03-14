@@ -1,7 +1,3 @@
-#!/usr/bin/python3
-""" Defining the review class, its attributes and relationships """
-
-
 from .basemodel import BaseModel
 from .place import Place
 from .user import User
