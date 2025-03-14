@@ -84,7 +84,7 @@ class UserResource(Resource):
             return {'error': 'User not found'}, 404
         return user.to_dict(), 200
     
-    @api.route('/<user_id>')
+@api.route('/<user_id>')
 class UserResource(Resource):
     @jwt_required()  # Accessible aux utilisateurs connectés
     @api.expect(update_user_model)
