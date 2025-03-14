@@ -25,19 +25,25 @@ def admin_required(fn):
     return wrapper
 @api.route('/')
 class AmenityList(Resource):
-    @api.expect(amenity_model)
+    @admin_required  # Seuls les admins peuvent ajouter des commodités
+    @api.expect(amenity_model, validate=True)
     @api.response(201, 'Amenity successfully created')
     @api.response(400, 'Amenity already exists')
     @api.response(400, 'Invalid input data')
-    @admin_required  # Restrict access to admins
+    @api.response(403, 'Forbidden: Admin access required')
     def post(self):
-        """Register a new amenity"""
+        """Create a new amenity (Admin only)"""
         amenity_data = api.payload
-        
-        existing_amenity = facade.amenity_repo.get_by_attribute('name', amenity_data.get('name'))
+        name = amenity_data.get('name')
+
+        if not name:
+            return {'error': 'Amenity name is required'}, 400
+
+        # Vérifier si la commodité existe déjà
+        existing_amenity = facade.get_amenity_by_name(name)
         if existing_amenity:
-            return {'error': 'Invalid input data'}, 400
-        
+            return {'error': 'Amenity already exists'}, 400
+
         try:
             new_amenity = facade.create_amenity(amenity_data)
             return new_amenity.to_dict(), 201
@@ -46,7 +52,7 @@ class AmenityList(Resource):
 
     @api.response(200, 'List of amenities retrieved successfully')
     def get(self):
-        """Retrieve a list of all amenities"""
+        """Retrieve all amenities"""
         amenities = facade.get_all_amenities()
         return [amenity.to_dict() for amenity in amenities], 200
 
@@ -62,28 +68,34 @@ class AmenityResource(Resource):
             return {'error': 'Amenity not found'}, 404
         return amenity.to_dict(), 200
 
-    @api.expect(amenity_model)
+    @api.route('/<amenity_id>')
+class AmenityResource(Resource):
+    @admin_required  # Seuls les admins peuvent modifier une commodité
+    @api.expect(amenity_model, validate=True)
     @api.response(200, 'Amenity updated successfully')
-    @api.response(404, 'Amenity not found')
     @api.response(400, 'Invalid input data')
-    @admin_required  # Only an admin can modify a convenience
+    @api.response(400, 'Amenity name already exists')
+    @api.response(404, 'Amenity not found')
+    @api.response(403, 'Forbidden: Admin access required')
     def put(self, amenity_id):
+        """Update an amenity (Admin only)"""
         amenity_data = api.payload
 
-        amenity = facade.get_amenity(amenity_id)
+        # Vérifier si la commodité existe
+        amenity = facade.get_amenity_by_id(amenity_id)
         if not amenity:
             return {'error': 'Amenity not found'}, 404
-        
-        # Check if the name is empty or missing
+
+        # Vérifier si le nom est valide (non vide)
         new_name = amenity_data.get('name', '').strip()
         if not new_name:
             return {'error': 'Invalid input data: name is required'}, 400
 
-        # Check if the name is already in use by another commodity
-        existing_amenity = facade.amenity_repo.get_by_attribute('name', new_name)
-        if existing_amenity and existing_amenity.id != amenity.id:
+        # Vérifier si le nom est déjà utilisé par une autre commodité
+        existing_amenity = facade.get_amenity_by_name(new_name)
+        if existing_amenity and existing_amenity.id != amenity_id:
             return {'error': 'Amenity with this name already exists'}, 400
-        
+
         try:
             updated_amenity = facade.update_amenity(amenity_id, amenity_data)
             return updated_amenity.to_dict(), 200
