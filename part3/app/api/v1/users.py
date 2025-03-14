@@ -1,5 +1,9 @@
+from flask_jwt_extended import jwt_required
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
+from flask import Blueprint, request, jsonify
+
+user_bp = Blueprint('user', __name__)
 
 api = Namespace('users', description='User operations')
 
@@ -13,6 +17,12 @@ user_model = api.model('User', {
 
 @api.route('/')
 class UserList(Resource):
+    @jwt_required
+    def create_user():
+        data = request.get_json()
+        # Logic of user creation here...
+        return jsonify({"message": "Create user in success"}), 201
+
     @api.expect(user_model, validate=True)
     @api.response(201, 'User successfully created')
     @api.response(400, 'Email already registered')
