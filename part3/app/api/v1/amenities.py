@@ -69,11 +69,23 @@ class AmenityResource(Resource):
     @admin_required  # Only an admin can modify a convenience
     def put(self, amenity_id):
         amenity_data = api.payload
+
         amenity = facade.get_amenity(amenity_id)
         if not amenity:
             return {'error': 'Amenity not found'}, 404
+        
+        # Check if the name is empty or missing
+        new_name = amenity_data.get('name', '').strip()
+        if not new_name:
+            return {'error': 'Invalid input data: name is required'}, 400
+
+        # Check if the name is already in use by another commodity
+        existing_amenity = facade.amenity_repo.get_by_attribute('name', new_name)
+        if existing_amenity and existing_amenity.id != amenity.id:
+            return {'error': 'Amenity with this name already exists'}, 400
+        
         try:
-            facade.update_amenity(amenity_id, amenity_data)
-            return {"message": "Amenity updated successfully"}, 200
+            updated_amenity = facade.update_amenity(amenity_id, amenity_data)
+            return updated_amenity.to_dict(), 200
         except Exception as e:
             return {'error': str(e)}, 400
