@@ -1,9 +1,18 @@
+import uuid
 from .basemodel import BaseModel
 from flask_bcrypt import Bcrypt
+from sqlalchemy import Column, String, Boolean
 import re
 
 bcrypt = Bcrypt()
 class User(BaseModel):
+    __tablename__ = 'users'
+
+    id = Column(String(60), primary_key=True, default=lambda: str(uuid.uuid4()))
+    email = Column(String(128), nullable=False, unique=True)
+    password = Column(String(128), nullable=False)
+    is_admin = Column(Boolean, default=False)
+
     emails = set()
 
     def __init__(self, first_name, last_name, email, is_admin=False):
@@ -90,5 +99,6 @@ class User(BaseModel):
             'id': self.id,
             'first_name': self.first_name,
             'last_name': self.last_name,
-            'email': self.email
+            'email': self.email,
+            'is_admin': self.is_admin
         }
