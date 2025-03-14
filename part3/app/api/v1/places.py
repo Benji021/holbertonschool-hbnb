@@ -158,9 +158,9 @@ class PlaceResource(Resource):
             return {'error': str(e)}, 400
 
     @jwt_required()
-    @admin_api.response(200, 'Place deleted successfully')
-    @admin_api.response(404, 'Place not found')
-    @admin_api.response(403, 'Unauthorized action')
+    @api.response(200, 'Place deleted successfully')
+    @api.response(404, 'Place not found')
+    @api.response(403, 'Unauthorized action')
     def delete(self, place_id):
         """Admin or owner can delete a place"""
         current_user = get_jwt_identity()
@@ -174,12 +174,12 @@ class PlaceResource(Resource):
             return {'message': 'Place deleted successfully'}, 200
         return {'error': 'Place not found'}, 404
  
-@admin_api.route('/<place_id>')
+@api.route('/<place_id>')
 class AdminPlaceModify(Resource):
-    @admin_api.expect(place_model)
-    @admin_api.response(200, 'Place updated successfully')
-    @admin_api.response(404, 'Place not found')
-    @admin_api.response(400, 'Invalid input data')
+    @api.expect(place_model)
+    @api.response(200, 'Place updated successfully')
+    @api.response(404, 'Place not found')
+    @api.response(400, 'Invalid input data')
     @jwt_required()
     def put(self, place_id):
         current_user = get_jwt_identity()
