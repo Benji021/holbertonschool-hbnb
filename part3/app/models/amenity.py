@@ -1,6 +1,3 @@
-#!/usr/bin/python3
-""" Defining the aminity class, its attributes and relationships """
-
 from .basemodel import BaseModel
 
 class Amenity(BaseModel):
