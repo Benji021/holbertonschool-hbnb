@@ -1,6 +1,3 @@
-#!/usr/bin/python3
-""" Defining the user class, its attributes and relationships """
-
 from .basemodel import BaseModel
 from flask_bcrypt import Bcrypt
 import re
@@ -9,7 +6,7 @@ bcrypt = Bcrypt()
 class User(BaseModel):
     emails = set()
 
-    def __init__(self, first_name, last_name, email, password, is_admin=False):
+    def __init__(self, first_name, last_name, email, is_admin=False):
         super().__init__()
         self.first_name = first_name
         self.last_name = last_name
@@ -17,7 +14,7 @@ class User(BaseModel):
         self.is_admin = is_admin
         self.places = []
         self.reviews = []
-        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+        self.password= None
     
     @property
     def first_name(self):
@@ -33,14 +30,6 @@ class User(BaseModel):
     @property
     def last_name(self):
         return self.__last_name
-
-    @password.setter
-    def password(self, value):
-        if not isinstance(value, str):
-            raise TypeError("Password must be a string")
-        if len(value) < 6:
-            raise ValueError("Password must be at least 6 characters long")
-        self.__password = bcrypt.generate_password_hash(value).decode('utf-8')
 
     @last_name.setter
     def last_name(self, value):
@@ -67,18 +56,6 @@ class User(BaseModel):
         User.emails.add(value)
 
     @property
-    def password(self):
-        return self.password
-    
-    def hash_password(self, password):
-        """Hashes the password before storing it."""
-        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
-
-    def verify_password(self, password):
-        """Verifies if the provided password matches the hashed password."""
-        return bcrypt.check_password_hash(self.password, password)
-
-    @property
     def is_admin(self):
         return self.__is_admin
     
@@ -100,11 +77,18 @@ class User(BaseModel):
         """Add an amenity to the place."""
         self.reviews.remove(review)
 
+    def hash_password(self, password):
+        """Hashes the password before storing it."""
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def verify_password(self, password):
+        """Verifies if the provided password matches the hashed password."""
+        return bcrypt.check_password_hash(self.password, password)
+
     def to_dict(self):
         return {
             'id': self.id,
             'first_name': self.first_name,
             'last_name': self.last_name,
             'email': self.email
-            'is_admin': self.is_admin
         }
