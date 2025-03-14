@@ -1,7 +1,5 @@
-from flask import Flask, request, jsonify
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
-from flask_bcrypt import generate_password_hash
 
 api = Namespace('users', description='User operations')
 
@@ -29,9 +27,6 @@ class UserList(Resource):
             return {'error': 'Email already registered'}, 400
 
         try:
-            # Hash the password before storing
-            user_data['password'] = generate_password_hash(user_data['password']).decode('utf-8')
-
             new_user = facade.create_user(user_data)
             return new_user.to_dict(), 201
         except Exception as e:
@@ -52,10 +47,7 @@ class UserResource(Resource):
         user = facade.get_user(user_id)
         if not user:
             return {'error': 'User not found'}, 404
-        
-        user_data = user.to_dict()
-        user_data.pop('password', None)  # Remove password from response
-        return user_data, 200
+        return user.to_dict(), 200
 
     @api.expect(user_model)
     @api.response(200, 'User updated successfully')
