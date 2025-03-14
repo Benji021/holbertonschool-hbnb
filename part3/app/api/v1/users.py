@@ -84,29 +84,39 @@ class UserResource(Resource):
             return {'error': 'User not found'}, 404
         return user.to_dict(), 200
     
+    @api.route('/<user_id>')
+class UserResource(Resource):
+    @jwt_required()  # Accessible aux utilisateurs connectés
     @api.expect(update_user_model)
     @api.response(200, 'User updated successfully')
+    @api.response(400, 'Email already registered')
     @api.response(404, 'User not found')
-    @api.response(400, 'Invalid input data')
-    @jwt_required()  # Accessible to authenticated users
+    @api.response(403, 'Forbidden: Not authorized to update this user')
     def put(self, user_id):
-        """Update a user's details (admin or user itself only)"""
+        """Update a user's details (Admin or user itself only)"""
         user_data = api.payload
         current_user_id = get_jwt_identity()
-        current_user = facade.get_user(current_user_id)
+        current_user = facade.get_user_by_id(current_user_id)
 
         if not current_user:
             return {'error': 'User not found'}, 404
-        
-        # Check if the target user exists
-        user = facade.get_user(user_id)
+
+        # Vérifier si l'utilisateur cible existe
+        user = facade.get_user_by_id(user_id)
         if not user:
             return {'error': 'User not found'}, 404
-        
-        # Check permissions: admin OR user itself
+
+        # Vérifier les permissions : Admin ou propriétaire du compte
         if not current_user.is_admin and str(current_user_id) != str(user_id):
             return {'error': 'Forbidden: Not authorized to update this user'}, 403
-        
+
+        # Vérifier si l'email est déjà utilisé par un autre utilisateur
+        new_email = user_data.get('email')
+        if new_email and new_email != user.email:
+            existing_user = facade.get_user_by_email(new_email)
+            if existing_user and existing_user.id != user_id:
+                return {'error': 'Email already registered'}, 400
+
         try:
             updated_user = facade.update_user(user_id, user_data)
             return updated_user.to_dict(), 200
