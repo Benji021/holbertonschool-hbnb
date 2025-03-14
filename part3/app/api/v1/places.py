@@ -1,26 +1,39 @@
 from flask_restx import Namespace, Resource, fields
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from functools import wraps
 from flask import jsonify
 from app.services import facade
 
+def admin_required(fn):
+    """Decorator to allow access only to admin users"""
+    @wraps(fn)
+    @jwt_required()
+    def wrapper(*args, **kwargs):
+        claims = get_jwt()
+        if not claims.get("is_admin", False):  # Vérifie si is_admin est True
+            return jsonify({"error": "Admin access required"}), 403
+        return fn(*args, **kwargs)
+    return wrapper
+
 def admin_or_owner_required(fn):
-    """Decorator to allow admins or owners of a place to modify/delete it"""
+    """Decorator to allow access only to admins or the owner of the place"""
     @wraps(fn)
     @jwt_required()
     def wrapper(place_id, *args, **kwargs):
+        claims = get_jwt()
         user_id = get_jwt_identity()
+        place_id = kwargs.get("place_id") # Get place_id cleanly
+        
         current_user = facade.get_user_by_id(user_id)
-
         if not current_user:
             return jsonify({"error": "User not found"}), 404
-        
+
         place = facade.get_place(place_id)
         if not place:
             return jsonify({"error": "Place not found"}), 404
-        
-        # Check if the user is admin or owner of the place
-        if not current_user.is_admin and place.owner_id != user_id:
+
+        # Vérifier si l'utilisateur est admin ou propriétaire
+        if not claims.get("is_admin", False) and place.owner_id != user_id:
             return jsonify({"error": "Forbidden: You do not have permission"}), 403
 
         return fn(place_id, *args, **kwargs)
@@ -54,11 +67,12 @@ amenities_list_model = api.model('AmenitiesList', {
 # Routes
 @api.route('/')
 class PlaceList(Resource):
+    @jwt_required()
     @api.expect(place_model)
     @api.response(201, 'Place successfully created')
     @api.response(400, 'Invalid input data')
     def post(self):
-        """Register a new place"""
+        """Register a new place (Authenticated users only)"""
         place_data = api.payload
         owner = place_data.get('owner_id')
 
@@ -98,7 +112,7 @@ class PlaceResource(Resource):
     @api.response(400, 'Invalid input data')
     @admin_or_owner_required
     def put(self, place_id):
-        """Update a place's information"""
+        """Update a place's information (Admin or owner only)"""
         place_data = api.payload
         place = facade.get_place(place_id)
         if not place:
@@ -114,7 +128,7 @@ class PlaceResource(Resource):
     @api.response(403, 'Forbidden')
     @admin_or_owner_required
     def delete(self, place_id):
-        """Delete a location (admin or owner only)"""
+        """Delete a place (Admin or owner only)"""
         try:
             facade.delete_place(place_id)
             return {"message": "Place deleted successfully"}, 200
@@ -123,12 +137,13 @@ class PlaceResource(Resource):
 
 @api.route('/<place_id>/amenities')
 class PlaceAmenities(Resource):
+    @jwt_required()
     @api.expect(amenities_list_model)
     @api.response(200, 'Amenities added successfully')
     @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
     def post(self, place_id):
-        """Add amenities to a place"""
+        """Add amenities to a place (Authenticated users only)"""
         amenities_data = api.payload.get('amenities', [])
         if not amenities_data:
             return {'error': 'Invalid input data: amenities list is required'}, 400
@@ -149,10 +164,11 @@ class PlaceAmenities(Resource):
 
 @api.route('/<place_id>/reviews/')
 class PlaceReviewList(Resource):
+    @jwt_required()
     @api.response(200, 'List of reviews for the place retrieved successfully')
     @api.response(404, 'Place not found')
     def get(self, place_id):
-        """Get all reviews for a specific place"""
+        """Get all reviews for a specific place (Authenticated users only)"""
         place = facade.get_place(place_id)
         if not place:
             return {'error': 'Place not found'}, 404
