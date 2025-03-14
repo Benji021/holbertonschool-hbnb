@@ -68,7 +68,7 @@ class AmenityResource(Resource):
             return {'error': 'Amenity not found'}, 404
         return amenity.to_dict(), 200
 
-    @api.route('/<amenity_id>')
+@api.route('/<amenity_id>')
 class AmenityResource(Resource):
     @admin_required  # Seuls les admins peuvent modifier une commodité
     @api.expect(amenity_model, validate=True)
