@@ -3,7 +3,7 @@ from flask_restx import Namespace, Resource, fields
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.services import facade
 from flask import Blueprint, request, jsonify
-from app.models import User
+from app.models.user import User
 
 user_bp = Blueprint('user', __name__)
 
