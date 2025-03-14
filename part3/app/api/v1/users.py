@@ -15,7 +15,7 @@ user_model = api.model('User', {
     'last_name': fields.String(required=True, description='Last name of the user'),
     'email': fields.String(required=True, description='Email of the user'),
     'password': fields.String(required=True, description='Password of the user'),
-    'is_admin': fields.Boolean(required=False, description='Is user an admin')
+    'is_admin': fields.Boolean(required=False, description='Admin status')
 })
 
 def admin_required(fn):
@@ -33,18 +33,22 @@ def admin_required(fn):
     return wrapper
 @api.route('/')
 class UserList(Resource):
-    @api.expect(user_model, validate=True)
+    @admin_required  # Only admins can create a user
+    @api.expect(user_model, validate=True)  # Automatic field validation
     @api.response(201, 'User successfully created')
     @api.response(400, 'Email already registered')
     @api.response(400, 'Invalid input data')
-    @admin_required  # Restrict access to admins
+    @api.response(403, 'Forbidden: Admin access required')
     def post(self):
-        """Register a new user"""
+        """Create a new user (Admin only)"""
         user_data = api.payload
 
-        # Simulate email uniqueness check (to be replaced by real validation with persistence)
-        existing_user = facade.get_user_by_email(user_data['email'])
-        if existing_user:
+        email = user_data.get('email')
+        if not email:
+            return {'error': 'Email is required'}, 400
+        
+        # Check if the email is already in use
+        if facade.get_user_by_email(email):
             return {'error': 'Email already registered'}, 400
 
         try:
