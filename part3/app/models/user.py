@@ -9,7 +9,7 @@ bcrypt = Bcrypt()
 class User(BaseModel):
     emails = set()
 
-    def __init__(self, first_name, last_name, email, is_admin=False):
+    def __init__(self, first_name, last_name, email, password, is_admin=False):
         super().__init__()
         self.first_name = first_name
         self.last_name = last_name
@@ -17,6 +17,7 @@ class User(BaseModel):
         self.is_admin = is_admin
         self.places = []
         self.reviews = []
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
     
     @property
     def first_name(self):
@@ -32,6 +33,14 @@ class User(BaseModel):
     @property
     def last_name(self):
         return self.__last_name
+
+    @password.setter
+    def password(self, value):
+        if not isinstance(value, str):
+            raise TypeError("Password must be a string")
+        if len(value) < 6:
+            raise ValueError("Password must be at least 6 characters long")
+        self.__password = bcrypt.generate_password_hash(value).decode('utf-8')
 
     @last_name.setter
     def last_name(self, value):
@@ -97,4 +106,5 @@ class User(BaseModel):
             'first_name': self.first_name,
             'last_name': self.last_name,
             'email': self.email
+            'is_admin': self.is_admin
         }
