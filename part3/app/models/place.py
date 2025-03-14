@@ -1,7 +1,3 @@
-#!/usr/bin/python3
-""" Defining the place class, its attributes and relationships """
-
-
 from .basemodel import BaseModel
 from .user import User
 
