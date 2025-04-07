@@ -28,42 +28,25 @@ class Repository(ABC):
 
 class InMemoryRepository(Repository):
     def __init__(self):
-        self._data = {}
-
-    def save(self, amenity):
-        """Saves an updated amenity in memory storage"""
-        self.data[amenity.id] = amenity  # Simulates backup
+        self._storage = {}
 
     def add(self, obj):
-        self._data[obj.id] = obj
+        self._storage[obj.id] = obj
 
     def get(self, obj_id):
-        return self._data.get(obj_id)
+        return self._storage.get(obj_id)
 
     def get_all(self):
-        return list(self._data.values())
+        return list(self._storage.values())
 
-    def update(self, amenity_id, data):
-        print(f">>> Type de data reçu dans update(): {type(data)} - Contenu: {data}")
-
-        if not isinstance(data, dict):
-            raise TypeError(f"Expected 'data' to be a dict, got {type(data)} instead.")
-    
-        amenity = self.get(amenity_id)
-        if not amenity:
-            return None
-
-        for key, value in data.items():
-            setattr(amenity, key, value)
-
-        if hasattr(self, "save"):
-            self.save(amenity)
-
-        return amenity
+    def update(self, obj_id, data):
+        obj = self.get(obj_id)
+        if obj:
+            obj.update(data)
 
     def delete(self, obj_id):
-        if obj_id in self._data:
-            del self._data[obj_id]
+        if obj_id in self._storage:
+            del self._storage[obj_id]
 
     def get_by_attribute(self, attr_name, attr_value):
-        return next((obj for obj in self._data.values() if getattr(obj, attr_name) == attr_value), None)
+        return next((obj for obj in self._storage.values() if getattr(obj, attr_name) == attr_value), None)
