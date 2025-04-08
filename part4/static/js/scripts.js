@@ -1,3 +1,4 @@
+// Part 1: DOM initialisation
 document.addEventListener('DOMContentLoaded', () => {
     // Simulates data retrieved from an API
     const place = {
@@ -22,10 +23,21 @@ document.addEventListener('DOMContentLoaded', () => {
       }
   ];
 
+  // Display the place details and reviews
   displayPlaceDetails(place);
   displayReviews(reviews);
+
+  // Add event listener for login form
+  const loginForm = document.getElementById('login-form');
+  if (loginForm) {
+      loginForm.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          await handleLoginFormSubmission();
+      });
+  }
 });
 
+// Part 2: Displaying location details and notices
 function displayPlaceDetails(place) {
   const section = document.getElementById("place-details");
   section.classList.add("place-details");
@@ -59,4 +71,47 @@ function displayReviews(reviews) {
       `;
       section.appendChild(card);
   });
+}
+
+// Part 3 : Connection logic
+async function handleLoginFormSubmission() {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
+
+  if (!email || !password) {
+      alert('Please fill in all fields.');
+      return;
+  }
+
+  try {
+      const loginSuccess = await loginUser(email, password);
+      if (loginSuccess) {
+          window.location.href = 'index.html'; // Redirection on success
+      } else {
+          alert('Connection failed.');
+      }
+  } catch (error) {
+      console.error('Connection attempt error', error);
+      alert('Connection error. Please try again later.');
+  }
+}
+
+async function loginUser(email, password) {
+  const response = await fetch('http://localhost:5000/api/v1/login', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+  });
+
+  if (response.ok) {
+      const data = await response.json();
+      document.cookie = `token=${data.access_token}; path=/`; // Storing the token in a cookie
+      return true;
+  } else {
+      const errorData = await response.json();
+      console.error('Erreur API:', errorData);
+      return false;
+  }
 }
