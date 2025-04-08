@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
       host: "Jean Dupont",
       price_per_night: 120,
       description: "Charming villa overlooking the Mediterranean Sea, ideal for relaxing",
-      amenities: ["Wi-Fi", "Piscine", "Cuisine équipée", "Climatisation"]
+      amenities: ["Wi-Fi", "Swimming pool", "Fully equipped kitchen", "Air-conditioning"]
   };
 
   const reviews = [
