@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Simulates data retrieved from an API
     const place = {
       id: 1,
-      name: "Villa au bord de mer",
+      name: "Villa by the sea",
       host: "Jean Dupont",
       price_per_night: 120,
       description: "Charming villa overlooking the Mediterranean Sea, ideal for relaxing",
@@ -39,9 +39,9 @@ function displayPlaceDetails(place) {
       <h2>${place.name}</h2>
       <div class="place-info">
           <p><strong>Hôte :</strong> ${place.host}</p>
-          <p><strong>Prix par nuit :</strong> ${place.price_per_night}€</p>
+          <p><strong>Prix by night :</strong> ${place.price_per_night}€</p>
           <p><strong>Description :</strong> ${place.description}</p>
-          <p><strong>Commodités :</strong> ${place.amenities.join(", ")}</p>
+          <p><strong>Amenities :</strong> ${place.amenities.join(", ")}</p>
       </div>
   `;
 }
