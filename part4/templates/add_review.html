@@ -7,19 +7,41 @@
     <link rel="stylesheet" href="static/css/styles.css">
 </head>
 <body>
+    <header>
+        <img scr="static/images/logo.png" alt="Logo HBNB" class="logo">
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="login.html" class=""login-button>connect</a></li>
+            </ul>   
+        </nav>
+    </header>
     <main>
         <!-- Add something to idfentify the place you're reviewing -->
-        <form id="review-form">
-            <h2>Add a Review</h2>
+        <h2>Add a Review</h2>
+            <from id="review-form" action="/submit_review" method="POST">
+                <input type="hidden" name="place_id" value="{{ place_id }}">
+            
             <label for="review">Your Review:</label>
             <textarea id="review" name="review" required></textarea>
+
             <label for="rating">Rating:</label>
             <select id="rating" name="rating" required>
                 <!-- Options for rating -->
+                 <option value="1">1 stars</option>
+                 <option value="2">2 stars</option>
+                 <option value="3">3 stars</option>
+                 <option value="4">4 stars</option>
+                 <option value="5">5 stars</option>
             </select>
-            <button type="submit">Submit Review</button>
+            <button type="submit" class="submit-button">Submit Review</button>
         </form>
     </main>
-    <script src="scripts.js"></script>
+
+    <footer>
+        <p>&copy; 2025 HBNB. All rights reserved.</p>
+    <footer>
+
+    <script src="static/js/scripts.js"></script>
 </body>
 </html>
