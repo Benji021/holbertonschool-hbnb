@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>List of place - HBNB</title>
+    <title>Place Details</title>
     <link rel="stylesheet" href="static/css/styles.css">
 </head>
 <body>
@@ -13,55 +13,47 @@
         <nav>
             <ul>
                 <li><a href="index.html">Home</a></li>
-                <li><a href="login.html" class="login-button">Connect</a></li>
+                <li><a href="login.html" class="login-button">connect</a></li>
             </ul>
         </nav>
     </header>
 
-    <!--Filter by price-->
     <main>
-        <section id="filter">
-            <h2>Filter place</h2>
-            <label for="price-filter">Max Price by night :</label>
-            <select id="price-filter">
-                <!-- Price options, dynamically added by JS -->
-                <option value="50">50€</option>
-                <option value="100">100€</option>
-                <option value="150">150€</option>
-                <option value="200">200€</option>
-                <option value="250">250€</option>
-            </select>
+        <section id="place-details" class="place-details">
+            <!-- Place details will be populated dynamically -->
         </section>
 
-        <!--Liste Place-->
-        <section id="place-list">
-            <h2>Place</h2>
-            <div class="place-card">
-                <h3>Apartment in Dijon</h3>
-                <p>Price : 100€ by night</p>
-                <a href="place_details.html" class="details-button">See details</a>
-            </div>
-            <!-- Repeat this block for each location -->
-        </section>
-
-        <section id="reviews">
+        <section id="reviews" class="reviews-section">
             <!-- Reviews will be populated dynamically -->
         </section>
-        <section id="add-review">
+
+        <section id="add-review" class="add-review-section">
             <h2>Add a Review</h2>
-            <form id="review-form">
+            <form id="review-form" class="add-review-form">
+                <div class="form-group">
                 <label for="review-text">Review:</label>
                 <textarea id="review-text" name="review-text" required></textarea>
-                
+            </div>
+            <div class="form-group">
+                <label for="rating">Note :</label>
+                <select id="rating" name="rating" required>
+                    <option value="">Choice Note</option>
+                    <option value="5">★★★★★</option>
+                    <option value="4">★★★★☆</option>
+                    <option value="3">★★★☆☆</option>
+                    <option value="2">★★☆☆☆</option>
+                    <option value="1">★☆☆☆☆</option>
+                </select>
+            </div>
                 <button type="submit">Submit</button>
             </form>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2025 HBNB - Tous droits réservés</p>
+        <p>&copy; 2025 HBNB - All rights reserved.</p>
     </footer>
-
+    
     <script src="static/js/scripts.js"></script>
 </body>
 </html>
