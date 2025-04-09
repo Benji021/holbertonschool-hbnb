@@ -115,3 +115,79 @@ async function loginUser(email, password) {
       return false;
   }
 }
+
+// Function to retrieve a cookie by name
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';')[0];
+    return null;
+}
+
+// Hide/show login link depending on token presence
+function checkAuthenticationAndInit() {
+    const token = getCookie('token');
+    const loginLink = document.querySelector('.login-button');
+
+    if (!token) {
+        loginLink.style.display = 'inline';
+    } else {
+        loginLink.style.display = 'none';
+        fetchPlaces(token);
+    }
+}
+
+// Retrieving locations from the API
+async function fetchPlaces(token) {
+    try {
+        const response = await fetch('http://localhost:5000/api/v1/places', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) throw new Error('Fetch error');
+
+        const places = await response.json();
+        window.placesData = places; // global stock to filter
+        displayPlaces(places);
+    } catch (error) {
+        console.error('Site recovery error :', error);
+    }
+}
+
+// Dynamically generate location maps
+function displayPlaces(places) {
+    const section = document.getElementById('places-list');
+    section.innerHTML = '<h2>Places</h2>'; // reset
+
+    places.forEach(place => {
+        const card = document.createElement('div');
+        card.className = 'place-card';
+        card.setAttribute('data-price', place.price_per_night);
+        card.innerHTML = `
+            <h3>${place.name}</h3>
+            <p>Price : ${place.price_per_night}€ by night</p>
+            <a href="place.html?id=${place.id}" class="details-button">Details</a>
+        `;
+        section.appendChild(card);
+    });
+}
+
+// Filter locations by max price
+function setupPriceFilter() {
+    const filter = document.getElementById('price-filter');
+    filter.addEventListener('change', () => {
+        const max = parseFloat(filter.value);
+        document.querySelectorAll('.place-card').forEach(card => {
+            const price = parseFloat(card.getAttribute('data-price'));
+            card.style.display = price <= max ? 'block' : 'none';
+        });
+    });
+}
+
+// Initialization
+document.addEventListener('DOMContentLoaded', () => {
+    checkAuthenticationAndInit();
+    setupPriceFilter();
+});
