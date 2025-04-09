@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <img src="static/images/logo.png" alt="Logo HBNB" class="logo">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo HBNB" class="logo">
         <nav>
             <ul>
                 <li><a href="index.html">Home</a></li>
@@ -50,6 +50,6 @@
         <p>&copy; 2025 HBNB - All rights reserved.</p>
     </footer>
 
-    <script src="{{ url_for('static', filename='js/scripts.js") }}></script>
+    <script src="{{ url_for('static', filename='js/scripts.js) }}"></script>
 </body>
 </html>
