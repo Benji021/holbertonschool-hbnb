@@ -25,7 +25,7 @@ class User(BaseModel):
         self.first_name: str = first_name
         self.last_name: str = last_name
         self.email: str = email
-        self.password: str = password
+        self.password = password # sans ': str' 
         self.is_admin: bool = is_admin
 
     @validates("first_name")
