@@ -38,6 +38,7 @@ def create_app(config_class="config.DevelopmentConfig"):
     # Define a route for the home page
     @app.route('/')
     def home():
+        print("Rendering index.html...")
         return render_template('index.html')
     
     return app
