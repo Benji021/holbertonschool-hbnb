@@ -19,6 +19,9 @@ def create_app(config_class="config.DevelopmentConfig"):
     print("TEMPLATE_DIR:", TEMPLATE_DIR)  # Affiche le chemin pour vérifier si c'est correct
     print("STATIC_DIR:", STATIC_DIR)  # Affiche le chemin des fichiers statiques
 
+    # Déboguer les fichiers dans templates
+    print("Files in TEMPLATE_DIR:", os.listdir(TEMPLATE_DIR))
+
     # Create the Flask application, specifying folders for templates and static files
     app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
     app.config.from_object(config_class)
