@@ -306,6 +306,6 @@ function displayPlaceDetails(place) {
     container.appendChild(price);
     container.appendChild(amenities);
     container.appendChild(amenitiesList);
-    container.appendChild(reviewsTitle);
+    container.appendChild(reviews);
     container.appendChild(reviewsList);
 }
