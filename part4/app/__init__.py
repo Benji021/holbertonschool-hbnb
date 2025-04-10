@@ -38,12 +38,7 @@ def create_app(config_class="config.DevelopmentConfig"):
     api.add_namespace(reviews_ns, path='/api/v1/reviews')
     api.add_namespace(auth_ns, path='/api/v1/auth')
 
-    # Define a route for the home page
-    @app.route('/')
-    def home():
-        print("Rendering index.html...")
-        return render_template('index.html')
-    
+    # Define a route for the home page 
     @app.route('/test')
     def test_route():
         return "Test route is working!"
