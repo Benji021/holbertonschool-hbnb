@@ -73,7 +73,8 @@ function displayReviews(reviews) {
   });
 }
 
-// Part 3 : Connection logic
+// Part 1 : Login
+
 async function handleLoginFormSubmission() {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value.trim();
@@ -123,6 +124,8 @@ function getCookie(name) {
     if (parts.length === 2) return parts.pop().split(';')[0];
     return null;
 }
+
+// Part 2 : Index
 
 // Hide/show login link depending on token presence
 function checkAuthenticationAndInit() {
@@ -191,3 +194,118 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAuthenticationAndInit();
     setupPriceFilter();
 });
+
+// Part 3: Place Details
+
+function getPlaceIdFromURL() {
+    // Extract the place ID from window.location.search
+    const params = new URLSearchParams(window.location.search);
+    return params.get('place_id');
+}
+// Calls the function and checks whether the place_id is present
+const place_id = getPlaceIdFromURL();
+    if (place_id) {
+    console.log("Place ID found :", placeId);
+}   else {
+    console.warn("place_id not found in URL");
+}
+
+// Check User Authentication
+function checkAuthentication() {
+    const token = getCookie('token');
+    const addReviewSection = document.getElementById('add-review');
+
+    if (!token) {
+        addReviewSection.style.display = 'none';
+    } else {
+        addReviewSection.style.display = 'block';
+        // Store the token for later use
+        fetchPlaceDetails(token, placeId);
+    }
+}
+
+function getCookie(name) {
+    // Function to get a cookie value by its name
+    const cookies = document.cookies.split(';');
+    for (let cookie of cookies) {
+        // Delete spaces
+        cookies = cookie.trim();
+        // Check if the cookie starts with the name
+        if (cookie.startsWith(name + '=')) {
+            return cookie.substring(name.length + 1);
+        }
+    }
+    return null;
+}
+
+// Fetch place details
+
+async function fetchPlaceDetails(token, placeId) {
+    // Make a GET request to fetch place details and Include the token in the Authorization header
+    try {
+        const response = await fetch(`http://localhost:5000/api/places/${placeId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Error retrieving location details');
+        }
+
+        const data = await response.json();
+        displayPlaceDetails(data); // Calling up the display function
+    } catch (error) {
+        console.error('Erreur :', error.message);
+    }
+}
+
+    // Handle the response and pass the data to displayPlaceDetails function
+function displayPlaceDetails(place) {
+    const container = document.getElementById('place-details');
+    container.innerHTML = ''; // Clear previous content
+
+    // Name
+    const name = document.createElement('h2');
+    name.textContent = place.name;
+
+    // Description
+    const description = document.createElement('p');
+    description.textContent = place.description;
+
+    // Price
+    const price = document.createElement('p');
+    price.textContent = `Price: ${place.price_per_night}€ by night`;
+
+    // Amenities
+    const amenities = document.createElement('h3');
+    amenities.textContent = 'Amenities:';
+
+    const amenitiesList = document.createElement('ul');
+    place.amenities.forEach(amenity =< {
+        const item = document.createElement('li');
+        item.textContent = amenity;
+        amenitiesList.appendChild(item);
+    })
+
+    // Reviews
+    const reviews = document.createElement('h3');
+    reviews.textContent = 'Reviews:';
+
+    const reviewsList = document.createElement('ul');
+    place.reviews.forEach(review => {
+        const item = document.createElement('li');
+        item.textContent = `${review.user_name}: ${review.text}`;
+        reviewsList.appendChild(item);
+    });
+
+    // Append all elements to the container
+    container.appendChild(name);
+    container.appendChild(description);
+    container.appendChild(price);
+    container.appendChild(amenities);
+    container.appendChild(amenitiesList);
+    container.appendChild(reviewsTitle);
+    container.appendChild(reviewsList);
+}
