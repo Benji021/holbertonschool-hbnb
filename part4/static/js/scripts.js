@@ -283,7 +283,7 @@ function displayPlaceDetails(place) {
     amenities.textContent = 'Amenities:';
 
     const amenitiesList = document.createElement('ul');
-    place.amenities.forEach(amenity =< {
+    place.amenities.forEach(amenity => {
         const item = document.createElement('li');
         item.textContent = amenity;
         amenitiesList.appendChild(item);
