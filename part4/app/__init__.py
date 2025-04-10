@@ -11,7 +11,7 @@ from app.database import init_db, seed_db
 def create_app(config_class="config.DevelopmentConfig"):
     app = Flask(__name__, template_folder='../templates', static_folder='../static')
     app.config.from_object(config_class)
-    api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API')
+    api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API', doc='/swagger')
     bcrypt.init_app(app=app)
     jwt.init_app(app=app)
     db.init_app(app)
