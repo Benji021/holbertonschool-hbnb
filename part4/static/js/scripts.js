@@ -309,3 +309,114 @@ function displayPlaceDetails(place) {
     container.appendChild(reviews);
     container.appendChild(reviewsList);
 }
+
+// Part 4 : Add Review
+
+// Check User Authentication
+function checkAuthentication() {
+    const token = getCookie('token');
+    if (!token) {
+        window.location.href = 'index.html';
+    }
+    return token;
+}
+
+function getCookie(name) {
+    // Function to get a cookie value by its name
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    if (match) {
+        return match[2];  // Return Cookie Value
+    }
+    return null;  // If the cookie does not exist, returns null
+}
+
+// Get place ID from URL
+function getPlaceIdFromURL() {
+    // Extract the place ID from window.location.search
+    const params = new URLSearchParams(window.location.search);
+    return params.get('placeId');  // Returns the value of the 'placeId' parameter
+}
+
+// Setup event listener for review form
+document.addEventListener('DOMContentLoaded', () => {
+    const reviewForm = document.getElementById('review-form');
+    const token = checkAuthentication();
+    const placeId = getPlaceIdFromURL();
+
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            // Get review text from form
+            const reviewText = document.getElementById('review-text').value;
+
+            // Préparer les données à envoyer dans la requête
+            const reviewData = {
+                review: reviewText,
+                placeId: placeId,
+            };
+
+            try {
+                // Make AJAX request to submit review
+                const response = await fetch('/api/reviews', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(reviewData),
+                });
+
+                // Handle the response
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Review submitted:', data);
+                } else {
+                    console.error('Failed to submit review');
+                }
+            } catch (error) {
+                console.error('Error during submission:', error);
+            }
+        });
+    }
+});
+
+// Make AJAX request to submit review
+async function submitReview(token, placeId, reviewText) {
+    // Make a POST request to submit review data
+    // Include the token in the Authorization header
+    // Send placeId and reviewText in the request body
+    try {
+        const response = await fetch('YOUR_ENDPOINT_URL', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`  // Add JWT token to Authorization header
+            },
+            body: JSON.stringify({
+                place_id: placeId,
+                review_text: reviewText
+            })
+        });
+
+        // Handle the response
+        if (!response.ok) {
+            throw new Error('Failed to submit review');
+        }
+
+        const result = await response.json();  // Processing the response in JSON
+        console.log('Review submitted successfully:', result);
+    } catch (error) {
+        console.error('Error submitting review:', error);
+    }
+}
+
+// Handle API response
+function handleResponse(response) {
+    if (response.ok) {
+        alert('Review submitted successfully!');
+        // Clear the form
+    } else {
+        alert('Failed to submit review');
+    }
+}
