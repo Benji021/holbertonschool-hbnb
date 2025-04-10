@@ -42,6 +42,6 @@ def create_app(config_class="config.DevelopmentConfig"):
     @app.route('/')
     def home():
         print("Rendering index.html...")
-        return "<h1>Page d'accueil</h1>"  # Check that index.html is in templates
+        return render_template('index.html')  # Check that index.html is in templates
 
     return app
