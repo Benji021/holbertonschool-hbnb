@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template
 from flask_restx import Api
 from app.api.v1.users import api as users_ns
@@ -9,7 +10,13 @@ from app.extensions import bcrypt, jwt, db
 from app.database import init_db, seed_db
 
 def create_app(config_class="config.DevelopmentConfig"):
-    app = Flask(__name__, template_folder='../templates', static_folder='../static')
+    # Define path file Templates and Static
+    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+    TEMPLATE_DIR = os.path.join(BASE_DIR, '..', 'templates')
+    STATIC_DIR = os.path.join(BASE_DIR, '..', 'static')
+
+    # Create the Flask application, specifying folders for templates and static files
+    app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
     app.config.from_object(config_class)
     api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API', doc='/swagger')
     bcrypt.init_app(app=app)
