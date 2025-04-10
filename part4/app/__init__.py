@@ -44,4 +44,9 @@ def create_app(config_class="config.DevelopmentConfig"):
         print("Rendering index.html...")
         return render_template('index.html')
     
+    @app.route('/test')
+    def test_route():
+        return "Test route is working!"
+
+    
     return app
