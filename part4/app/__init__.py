@@ -15,6 +15,10 @@ def create_app(config_class="config.DevelopmentConfig"):
     TEMPLATE_DIR = os.path.join(BASE_DIR, '..', 'templates')
     STATIC_DIR = os.path.join(BASE_DIR, '..', 'static')
 
+    # Déboguer les chemins
+    print("TEMPLATE_DIR:", TEMPLATE_DIR)  # Affiche le chemin pour vérifier si c'est correct
+    print("STATIC_DIR:", STATIC_DIR)  # Affiche le chemin des fichiers statiques
+
     # Create the Flask application, specifying folders for templates and static files
     app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
     app.config.from_object(config_class)
@@ -31,6 +35,7 @@ def create_app(config_class="config.DevelopmentConfig"):
     api.add_namespace(reviews_ns, path='/api/v1/reviews')
     api.add_namespace(auth_ns, path='/api/v1/auth')
 
+    # Define a route for the home page
     @app.route('/')
     def home():
         return render_template('index.html')
