@@ -1,5 +1,8 @@
 // Part 1: DOM initialisation
 document.addEventListener('DOMContentLoaded', () => {
+    // --- Configuration ---
+    const API_BASE_URL = 'http://127.0.0.1:5000/api/v1'; // CHANGE TO YOUR API URL
+    
     // Simulates data retrieved from an API
     const place = {
       id: 1,
