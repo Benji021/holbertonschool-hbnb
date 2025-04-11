@@ -205,7 +205,7 @@ function getPlaceIdFromURL() {
 // Calls the function and checks whether the place_id is present
 const place_id = getPlaceIdFromURL();
     if (place_id) {
-    console.log("Place ID found :", placeId);
+    console.log("Place ID found :", place_Id);
 }   else {
     console.warn("place_id not found in URL");
 }
@@ -334,7 +334,7 @@ function getCookie(name) {
 function getPlaceIdFromURL() {
     // Extract the place ID from window.location.search
     const params = new URLSearchParams(window.location.search);
-    return params.get('placeId');  // Returns the value of the 'placeId' parameter
+    return params.get('place_Id');  // Returns the value of the 'placeId' parameter
 }
 
 // Setup event listener for review form
