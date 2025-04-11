@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, session, redirect, url_for
+from flask import Flask, render_template
 from flask_restx import Api
 from app.api.v1.users import api as users_ns
 from app.api.v1.amenities import api as amenities_ns
@@ -44,19 +44,4 @@ def create_app(config_class="config.DevelopmentConfig"):
         print("Rendering index.html...")
         return render_template('index.html')  # Check that index.html is in templates
 
-    # Login Page
-    @app.route('/login')
-    def login():
-        return render_template('login.html')
-
-    # Deconnection Page
-    @app.route('/logout')
-    def logout():
-        session.clear()  # si tu utilises les sessions
-        return redirect(url_for('index'))
-
-    @app.route('/places/<int:place_id>')
-    def place_detail(place_id):
-        place = get_place_by_id(place_id)  # à remplacer par ta propre logique
-        return render_template('place.html', place=place)
     return app
